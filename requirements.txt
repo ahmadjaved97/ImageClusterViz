@@ -1,0 +1,7 @@
+torch==2.0.1
+torchvision==0.15.2
+numpy==1.24.2
+Pillow==9.5.0
+opencv-python==4.8.0.74
+rich==13.3.4
+scikit-learn==1.2.2
