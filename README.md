@@ -23,7 +23,7 @@ Ensure all dependencies are installed using the following command:
 
 ### Running the Script
 ```
-python script_name.py --image_dataset_path <path_to_image_dataset> \
+python cluster_images.py --image_dataset_path <path_to_image_dataset> \
                       --grid_folder <path_to_save_grid_images> \
                       --cluster_folder <path_to_save_clustered_images> \
                       --feature_dict_path <path_to_save_or_load_feature_dict> \
@@ -35,7 +35,7 @@ python script_name.py --image_dataset_path <path_to_image_dataset> \
 
 ### Example Command
 ```
-python script_name.py --image_dataset_path ./images \
+python cluster_images.py --image_dataset_path ./images \
                       --grid_folder ./grids \
                       --cluster_folder ./clusters \
                       --feature_dict_path ./features \
