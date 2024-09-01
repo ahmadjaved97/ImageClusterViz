@@ -45,6 +45,23 @@ python cluster_images.py --image_dataset_path ./images \
                       --use_feature_dict
 ```
 
+### Sample Output
+- Dataset Used: [Fruit and Vegetable Classification](https://www.kaggle.com/code/abdelrahman16/fruit-and-vegetable-classification/input)
+- Number of Clusters: 8
+- Model Used: ViT
+- Clustering Method: Kmeans
+- Output:
+    <p align="center">
+        <img src="./output_grids/cluster_0.jpg" alt="Image 1" width="250" height="250">
+        <img src="./output_grids/cluster_1.jpg" alt="Image 2" width="250" height="250">
+        <img src="./output_grids/cluster_2.jpg" alt="Image 3" width="250" height= "250">
+        <img src="./output_grids/cluster_3.jpg" alt="Image 3" width="250" height= "250">
+        <img src="./output_grids/cluster_4.jpg" alt="Image 3" width="250" height= "250">
+        <img src="./output_grids/cluster_5.jpg" alt="Image 3" width="250" height= "250">
+        <img src="./output_grids/cluster_6.jpg" alt="Image 3" width="250" height= "250">
+        <img src="./output_grids/cluster_7.jpg" alt="Image 3" width="250" height= "250">
+    </p>
+
 ### Argument Description:
 - **--image_dataset_path**: Path to the folder containing images.
 - --**grid_folder**: Path to save the generated grid images (default: current directory).
@@ -54,3 +71,5 @@ python cluster_images.py --image_dataset_path ./images \
 - --**model**: The model type to use for feature extraction, either vit or resnet.
 - --**clustering_method**: The method to use for clustering, either kmeans or gmm.
 - --**use_feature_dict**: Use this flag if you want to use an existing feature dictionary instead of recalculating it.
+
+
