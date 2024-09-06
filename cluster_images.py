@@ -14,6 +14,9 @@ import shutil
 import pickle
 import argparse
 
+# add support for different models apart from resnet50 and ViT
+# explore the use of CLIP
+
 def create_image_grid(image_list, num_rows=None, num_cols=None, image_size=(100, 100), space_color=(255, 255, 255), space_width=10):
     """
     Arranges a list of images into a grid format.Automatically calculates the number of rows and columns if not provided,
@@ -154,7 +157,7 @@ def save_dict(feature_dict, path):
     """
     Saves a dictionary of image features to a file using pickle.
     """
-    output_path = os.path.join(path, "feature_dictionary.pickle")
+    output_path = os.path.join(path, "feature_dictionary.pkl")
     with open(output_path, "wb") as file:
         pickle.dump(feature_dict, file)
     print(f"[yellow]Feature dictionary saved at: [bold red]{output_path}")
@@ -163,7 +166,7 @@ def read_dict(path):
     """
     Loads a dictionary of image features from a file using pickle.
     """
-    input_path = os.path.join(path, "feature_dictionary.pickle")
+    input_path = os.path.join(path, "feature_dictionary.pkl")
     with open(input_path, "rb") as file:
         feature_dict = pickle.load(file)
     return feature_dict
