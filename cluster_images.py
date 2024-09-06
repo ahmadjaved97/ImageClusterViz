@@ -179,7 +179,11 @@ def create_feature_dict(dataset_path, model, preprocess, model_type):
     for file in track(os.listdir(dataset_path), total=len(os.listdir(dataset_path)), description="Getting image features", complete_style="yellow"):
         if file.endswith(".jpg"):
             image_path = os.path.join(dataset_path, file)
-            image = Image.open(image_path)
+            try:
+                image = Image.open(image_path)
+            except RuntimeError as e:
+                image = Image.open(image_path).convert('RGB')
+
             image_feature = extract_features(image, model, preprocess, model_type)
             feature_dict[file] = image_feature
     return feature_dict
