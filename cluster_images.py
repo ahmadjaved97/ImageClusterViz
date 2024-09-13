@@ -14,7 +14,6 @@ import shutil
 import pickle
 import argparse
 
-# create_feature_dict function works correctly but doesn't show the correct information.
 # add support for different models apart from resnet50 and ViT
 # explore the use of CLIP
 
