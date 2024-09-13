@@ -164,6 +164,8 @@ def save_dict(feature_dict, path):
     if os.path.exists(output_path):
         with open(output_path, "rb") as file:
             existing_data = pickle.load(file)
+        
+        # print(len(existing_data))
         existing_data.update(feature_dict)  # Update the dictionary with new features
         feature_dict = existing_data
     
@@ -187,11 +189,11 @@ def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save
     Creates a dictionary mapping image filenames to their corresponding feature vectors, extracted using the specified model.
     """
     # Check if the feature dictionary file already exists and load it
+    feature_dict = {}
     if os.path.exists(os.path.join(save_path, "feature_dictionary.pkl")):
         feature_dict = read_dict(save_path)
         print(f"[yellow]Loaded existing feature dictionary with {len(feature_dict)} items.")
     else:
-        feature_dict = {}
         print(f"[yellow]No existing feature dictionary found. Creating a new one.")
     
     file_list = os.listdir(dataset_path)
@@ -205,17 +207,16 @@ def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save
 
             image_path = os.path.join(dataset_path, file)
             try:
-                image = Image.open(image_path)
-            except RuntimeError as e:
                 image = Image.open(image_path).convert('RGB')
+                image_feature = extract_features(image, model, preprocess, model_type)
+                feature_dict[file] = image_feature
+            except Exception as e:
+                print(f"Error processing [red]{file}[/red]: {str(e)}")
 
-            image_feature = extract_features(image, model, preprocess, model_type)
-            feature_dict[file] = image_feature
-        
-        # Save the feature dict every `n` iterations
-        if (idx + 1) % n == 0:
-            save_dict(feature_dict, save_path)
-            feature_dict.clear()  # Clear the in-memory dict to free up memory
+            # Save the feature dict every `n` iterations
+            if (idx + 1) % n == 0:
+                save_dict(feature_dict, save_path)
+                # feature_dict.clear()  # Clear the in-memory dict to free up memory
     
     # Final save after the loop completes
     if feature_dict:
@@ -250,7 +251,8 @@ if __name__ == "__main__":
         model_type = 'resnet'
 
     if not args.use_feature_dict:
-        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=3)
+        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=10)
+        print(len(image_feature_dict))
         save_dict(image_feature_dict, args.feature_dict_path)
     else:
         image_feature_dict = read_dict(args.feature_dict_path)
