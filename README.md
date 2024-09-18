@@ -14,6 +14,9 @@ This is particularly useful for applications involving large datasets of images 
 
 The tool is designed to be flexible, allowing users to choose between different models and clustering methods, and to either calculate features on the fly or use precomputed ones.
 
+### Reusing Precomputed Features
+To avoid recomputing features every time you adjust the number of clusters or clustering method, the program saves the extracted features in a pickle file. You can enable this feature by setting the appropriate flag in the code to load precomputed features:
+
 ## Usage
 
 ### Prerequisites
