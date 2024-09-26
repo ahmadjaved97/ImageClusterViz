@@ -9,58 +9,12 @@ import cv2
 from rich.progress import track
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
-import math
 import shutil
-import pickle
 import argparse
+from utils import create_image_grid,read_dict, save_dict
 
 # add support for different models apart from resnet50 and ViT
 # explore the use of CLIP
-
-def create_image_grid(image_list, num_rows=None, num_cols=None, image_size=(100, 100), space_color=(255, 255, 255), space_width=10):
-    """
-    Arranges a list of images into a grid format.Automatically calculates the number of rows and columns if not provided,
-    resizes images to a specified size, and places them into the grid with optional spacing and numbering.
-    """
-    if num_rows is None and num_cols is None:
-        num_images = len(image_list)
-        num_cols = int(math.sqrt(num_images))
-        num_rows = math.ceil(num_images / num_cols)
-    elif num_rows is None:
-        num_rows = math.ceil(len(image_list) / num_cols)
-    elif num_cols is None:
-        num_cols = math.ceil(len(image_list) / num_rows)
-
-    grid_width = num_cols * (image_size[0] + space_width) - space_width
-    grid_height = num_rows * (image_size[1] + space_width) - space_width
-    grid_image = np.zeros((grid_height, grid_width, 3), dtype=np.uint8)
-    grid_image[:, :] = space_color
-
-    for i, image in enumerate(image_list):
-        image = cv2.resize(image, image_size)
-        row = i // num_cols
-        col = i % num_cols
-        x = col * (image_size[0] + space_width)
-        y = row * (image_size[1] + space_width)
-        grid_image[y: y + image_size[1], x: x + image_size[0]] = image
-    
-    for row in range(num_rows):
-        y = row * (image_size[1] + space_width) + 5
-        cv2.putText(grid_image, str(row + 1), (5, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-
-    for col in range(num_cols):
-        x = col * (image_size[0] + space_width) + 5
-        cv2.putText(grid_image, str(col + 1), (x, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
-
-    return grid_image
-
-def hconcat_resize(img_list, interpolation=cv2.INTER_CUBIC):
-    """
-    Horizontally concatenates a list of images after resizing them to the height of the smallest image in the list, using the specified interpolation method.
-    """
-    h_min = min(img.shape[0] for img in img_list)
-    im_list_resize = [cv2.resize(img, (int(img.shape[1] * h_min / img.shape[0]), h_min), interpolation=interpolation) for img in img_list]
-    return cv2.hconcat(im_list_resize)
 
 def load_vit_model(weights=models.ViT_B_16_Weights.DEFAULT):
     """
@@ -153,35 +107,6 @@ def create_cluster_grids(cluster_data, source_path, output_folder):
         output_path = os.path.join(output_folder, cluster_name)
         cv2.imwrite(output_path, grid)
 
-def save_dict(feature_dict, path):
-    """
-    Saves a dictionary of image features to a file using pickle.
-    """
-    output_path = os.path.join(path, "feature_dictionary.pkl")
-    
-    # Load existing data if the file exists
-    if os.path.exists(output_path):
-        with open(output_path, "rb") as file:
-            existing_data = pickle.load(file)
-        
-        # print(len(existing_data))
-        existing_data.update(feature_dict)  # Update the dictionary with new features
-        feature_dict = existing_data
-    
-    # Save the updated dictionary back to the pickle file
-    with open(output_path, "wb") as file:
-        pickle.dump(feature_dict, file)
-    
-    print(f"[yellow]Feature dictionary saved/updated at: [bold red]{output_path}")
-
-def read_dict(path):
-    """
-    Loads a dictionary of image features from a file using pickle.
-    """
-    input_path = os.path.join(path, "feature_dictionary.pkl")
-    with open(input_path, "rb") as file:
-        feature_dict = pickle.load(file)
-    return feature_dict
 
 def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save_path="."):
     """
@@ -251,8 +176,7 @@ if __name__ == "__main__":
 
     if not args.use_feature_dict:
         image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=10)
-        print(len(image_feature_dict))
-        save_dict(image_feature_dict, args.feature_dict_path)
+        # save_dict(image_feature_dict, args.feature_dict_path)
     else:
         image_feature_dict = read_dict(args.feature_dict_path)
 
