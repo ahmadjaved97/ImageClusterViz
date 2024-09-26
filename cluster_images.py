@@ -12,53 +12,11 @@ from sklearn.mixture import GaussianMixture
 import shutil
 import argparse
 from utils import create_image_grid,read_dict, save_dict
+from feature_extraction import load_resnet50_model, load_vit_model, extract_features
 
 # add support for different models apart from resnet50 and ViT
 # explore the use of CLIP
 
-def load_vit_model(weights=models.ViT_B_16_Weights.DEFAULT):
-    """
-    Loads a pre-trained Vision Transformer (ViT) model along with its associated preprocessing transforms.
-    """
-    vit = models.vit_b_16(weights=weights)
-    vit.eval()
-    preprocess = weights.transforms()
-    return vit, preprocess
-
-def load_resnet50_model():
-    """
-    Loads a pre-trained ResNet-50 model, excluding the final fully connected layer, and sets up the necessary preprocessing steps.
-    """
-    resnet = models.resnet50(pretrained=True)
-    resnet.eval()
-    resnet = torch.nn.Sequential(*list(resnet.children())[:-1])
-    preprocess = transforms.Compose([
-        transforms.Resize((512, 512)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
-    return resnet, preprocess
-
-def extract_features(image, model, preprocess, model_type='vit'):
-    """
-    Extracts features from an image using the specified model (ViT or ResNet). 
-    The function preprocesses the image, forwards it through the model, and returns the extracted feature vector.
-    """
-    image = preprocess(image)
-    if model_type == 'resnet':
-        image = image.unsqueeze(0)
-        features = model(image)
-        features = torch.flatten(features, start_dim=1)
-        features = features[0].cpu().detach().numpy()
-    else:  # ViT
-        image = image.unsqueeze(0)
-        feats = model._process_input(image)
-        batch_class_token = model.class_token.expand(image.shape[0], -1, -1)
-        feats = torch.cat([batch_class_token, feats], dim=1)
-        feats = model.encoder(feats)
-        feats = feats[:, 0]
-        features = feats.cpu().detach().numpy()[0]
-    return features
 
 def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans'):
     """
