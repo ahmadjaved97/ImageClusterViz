@@ -116,7 +116,8 @@ if __name__ == "__main__":
     parser.add_argument('--use_feature_dict', action='store_true', help='Use existing feature dictionary instead of recalculating.')
     parser.add_argument('--model', type=str, choices=['vit', 'resnet'], default='vit', help='Model to use for feature extraction (default: ViT).')
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm'], default='kmeans', help='Clustering method to use (default: KMeans).')
-
+    # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
+    # of images in the folder.
     args = parser.parse_args()
 
     if args.use_feature_dict and args.feature_dict_path is None:
@@ -133,9 +134,11 @@ if __name__ == "__main__":
         model_type = 'resnet'
 
     if not args.use_feature_dict:
-        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=10)
-        # save_dict(image_feature_dict, args.feature_dict_path)
+        # write a function/feature to add more info to feature dict such as dataset folder, model used, if they
+        # match with the argument then load the old feature dict otherwise create a new one.
+        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=10, save_path=args.feature_dict_path)
     else:
+        # should be able to take a file path(such as .csv, .txt) as well/ currently only takes a folder path.
         image_feature_dict = read_dict(args.feature_dict_path)
 
     cluster_data = get_clustered_data(image_feature_dict, args.num_clusters, args.clustering_method)
