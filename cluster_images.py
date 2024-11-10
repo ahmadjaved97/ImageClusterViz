@@ -15,7 +15,7 @@ from utils import create_image_grid,read_dict, save_dict
 from feature_extraction import load_resnet50_model, load_vit_model, extract_features
 
 # add support for different models apart from resnet50 and ViT
-# explore the use of CLIP
+
 
 
 def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans'):
@@ -76,7 +76,7 @@ def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save
         feature_dict = read_dict(save_path)
         print(f"[yellow]Loaded existing feature dictionary with {len(feature_dict)} items.")
     else:
-        print(f"[yellow]No existing feature dictionary found. Creating a new one.")
+        print(f"[yellow]No existing feature dictionary found. Creating a new one at: {save_path}")
     
     file_list = os.listdir(dataset_path)
     
@@ -118,6 +118,8 @@ if __name__ == "__main__":
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm'], default='kmeans', help='Clustering method to use (default: KMeans).')
     # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
     # of images in the folder.
+    
+    # make a default feature dictionary name and pass it in the functions
     args = parser.parse_args()
 
     if args.use_feature_dict and args.feature_dict_path is None:
@@ -133,7 +135,12 @@ if __name__ == "__main__":
         model, preprocess = load_resnet50_model()
         model_type = 'resnet'
 
+
     if not args.use_feature_dict:
+        # Delete existing feature dict if present
+        if args.feature_dict_path and os.path.exists(os.path.join(args.feature_dict_path, "feature_dictionary.pkl")):
+            print(f"Removing exisiting feature dictionary at: {os.path.join(args.feature_dict_path, 'feature_dictionary.pkl')}")
+            os.remove(os.path.join(args.feature_dict_path, "feature_dictionary.pkl"))
         # write a function/feature to add more info to feature dict such as dataset folder, model used, if they
         # match with the argument then load the old feature dict otherwise create a new one.
         image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=10, save_path=args.feature_dict_path)
