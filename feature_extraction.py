@@ -59,6 +59,22 @@ def load_resnet50_model():
     ])
     return resnet, preprocess
 
+def load_vgg16_model():
+    vgg16 = models.vgg16(pretrained=True)
+    vgg16.eval()
+    vgg16 = torch.nn.Sequential(*list(vgg16.children())[:-1])
+    preprocess = transforms.Compose([
+        transforms.Resize((512, 512)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    return vgg16, preprocess
+    
+
+def load_mobilenetv3_model():
+    pass
+
 def extract_features(image, model, preprocess, model_type='vit'):
     """
     Extracts features from a given image using a specified pre-trained model (Vision Transformer or ResNet).
@@ -95,7 +111,15 @@ def extract_features(image, model, preprocess, model_type='vit'):
         features = model(image)
         features = torch.flatten(features, start_dim=1)
         features = features[0].cpu().detach().numpy()
-    else:  # ViT
+
+    elif model_type == 'vgg16':
+        image = image.unsqueeze(0)
+        with torch.no_grad():
+            features = model(image)
+        features = torch.flatten(features, start_dim=1)
+        features = features[0].cpu().detach().numpy()
+
+    elif model_type == 'vit':  # ViT
         image = image.unsqueeze(0)
         feats = model._process_input(image)
         batch_class_token = model.class_token.expand(image.shape[0], -1, -1)
