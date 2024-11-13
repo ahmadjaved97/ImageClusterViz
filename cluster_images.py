@@ -12,7 +12,7 @@ from sklearn.mixture import GaussianMixture
 import shutil
 import argparse
 from utils import create_image_grid,read_dict, save_dict
-from feature_extraction import load_resnet50_model, load_vit_model, load_vgg16_model, extract_features
+from feature_extraction import load_resnet50_model, load_vit_model, load_vgg16_model,load_mobilenetv3_model, extract_features
 
 # add support for different models apart from resnet50 and ViT
 
@@ -81,7 +81,7 @@ def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save
     file_list = os.listdir(dataset_path)
     
     for idx, file in enumerate(track(file_list, total=len(file_list), description="Getting image features", complete_style="yellow")):
-        if file.endswith(".jpg"):
+        if file.endswith(".jpg"): # TODO: add JPEG, PNG etc.
             # Skip the file if it's already in the existing feature_dict
             if file in feature_dict:
                 print(f"Skipping [green]{file}[/green], already in feature_dict.")
@@ -114,10 +114,12 @@ if __name__ == "__main__":
     parser.add_argument('--feature_dict_path', type=str, default='./', help='Path to save/load the feature dictionary (default: current directory).')
     parser.add_argument('--num_clusters', type=int, default=5, help='Number of clusters.')
     parser.add_argument('--use_feature_dict', action='store_true', help='Use existing feature dictionary instead of recalculating.')
-    parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16'], default='vit', help='Model to use for feature extraction (default: ViT).')
+    parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3'], default='vit', help='Model to use for feature extraction (default: ViT).')
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm'], default='kmeans', help='Clustering method to use (default: KMeans).')
     # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
     # of images in the folder.
+
+    # Make a resume parameter(by default: False) if true, then the feature_dict won't be deleted
     
     # make a default feature dictionary name and pass it in the functions
     args = parser.parse_args()
@@ -137,6 +139,11 @@ if __name__ == "__main__":
     elif args.model == 'vgg16':
         model, preprocess = load_vgg16_model()
         model_type = 'vgg16'
+    elif args.model == 'mobilenetv3':
+        print("Loaded mobilenet model")
+        model, preprocess = load_mobilenetv3_model()
+        model_type = 'mobilenetv3'
+    
 
 
     if not args.use_feature_dict:

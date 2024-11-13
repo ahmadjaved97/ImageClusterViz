@@ -72,8 +72,17 @@ def load_vgg16_model():
     return vgg16, preprocess
     
 
-def load_mobilenetv3_model():
-    pass
+def load_mobilenetv3_model(weights=models.MobileNet_V3_Large_Weights.IMAGENET1K_V2):
+    mobilenet = models.mobilenet_v3_large(weights=weights)
+    mobilenet.eval()
+    mobilenet = mobilenet.features
+    preprocess = transforms.Compose([
+        transforms.Resize((512, 512)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+    return mobilenet, preprocess
 
 def extract_features(image, model, preprocess, model_type='vit'):
     """
@@ -118,7 +127,14 @@ def extract_features(image, model, preprocess, model_type='vit'):
             features = model(image)
         features = torch.flatten(features, start_dim=1)
         features = features[0].cpu().detach().numpy()
-
+    
+    elif model_type == 'mobilenetv3':
+        image = image.unsqueeze(0)
+        with torch.no_grad():
+            features = model(image)
+        features = torch.flatten(features, start_dim=1)
+        features = features[0].cpu().detach().numpy()
+        
     elif model_type == 'vit':  # ViT
         image = image.unsqueeze(0)
         feats = model._process_input(image)
