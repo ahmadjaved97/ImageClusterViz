@@ -29,7 +29,7 @@ def load_vit_model(weights=models.ViT_B_16_Weights.DEFAULT):
     preprocess = weights.transforms()
     return vit, preprocess
 
-def load_resnet50_model():
+def load_resnet50_model(weights=models.ResNet50_Weights.IMAGENET1K_V2):
     """
     Loads a pre-trained ResNet-50 model with the final fully connected layer removed, and returns the model 
     along with its preprocessing transforms. This setup is useful for feature extraction tasks where the model's 
@@ -49,7 +49,7 @@ def load_resnet50_model():
     - The final fully connected layer (used for classification) is excluded to make the model suitable for feature extraction.
     """
 
-    resnet = models.resnet50(pretrained=True)
+    resnet = models.resnet50(weights=weights)
     resnet.eval()
     resnet = torch.nn.Sequential(*list(resnet.children())[:-1])
     preprocess = transforms.Compose([
@@ -59,8 +59,8 @@ def load_resnet50_model():
     ])
     return resnet, preprocess
 
-def load_vgg16_model():
-    vgg16 = models.vgg16(pretrained=True)
+def load_vgg16_model(weights=models.VGG16_Weights.IMAGENET1K_V1):
+    vgg16 = models.vgg16(weights=weights)
     vgg16.eval()
     vgg16 = torch.nn.Sequential(*list(vgg16.children())[:-1])
     preprocess = transforms.Compose([
@@ -115,32 +115,32 @@ def extract_features(image, model, preprocess, model_type='vit'):
     """
      
     image = preprocess(image)
+    image = image.unsqueeze(0)
+
     if model_type == 'resnet':
-        image = image.unsqueeze(0)
-        features = model(image)
+        with torch.no_grad():
+          features = model(image)
         features = torch.flatten(features, start_dim=1)
         features = features[0].cpu().detach().numpy()
 
     elif model_type == 'vgg16':
-        image = image.unsqueeze(0)
         with torch.no_grad():
             features = model(image)
         features = torch.flatten(features, start_dim=1)
         features = features[0].cpu().detach().numpy()
     
     elif model_type == 'mobilenetv3':
-        image = image.unsqueeze(0)
         with torch.no_grad():
             features = model(image)
         features = torch.flatten(features, start_dim=1)
         features = features[0].cpu().detach().numpy()
         
     elif model_type == 'vit':  # ViT
-        image = image.unsqueeze(0)
         feats = model._process_input(image)
         batch_class_token = model.class_token.expand(image.shape[0], -1, -1)
         feats = torch.cat([batch_class_token, feats], dim=1)
         feats = model.encoder(feats)
         feats = feats[:, 0]
         features = feats.cpu().detach().numpy()[0]
+
     return features
