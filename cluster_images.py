@@ -133,17 +133,12 @@ if __name__ == "__main__":
 
     if args.model == 'vit':
         model, preprocess = load_vit_model()
-        model_type = 'vit'
     elif args.model == 'resnet':
         model, preprocess = load_resnet50_model()
-        model_type = 'resnet'
     elif args.model == 'vgg16':
         model, preprocess = load_vgg16_model()
-        model_type = 'vgg16'
     elif args.model == 'mobilenetv3':
-        print("Loaded mobilenet model")
         model, preprocess = load_mobilenetv3_model()
-        model_type = 'mobilenetv3'
     
 
 
@@ -154,7 +149,7 @@ if __name__ == "__main__":
             os.remove(os.path.join(args.feature_dict_path, "feature_dictionary.pkl"))
         # write a function/feature to add more info to feature dict such as dataset folder, model used, if they
         # match with the argument then load the old feature dict otherwise create a new one.
-        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, model_type, n=10, save_path=args.feature_dict_path)
+        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, args.model, n=10, save_path=args.feature_dict_path)
     else:
         # should be able to take a file path(such as .csv, .txt) as well/ currently only takes a folder path.
         image_feature_dict = read_dict(args.feature_dict_path)
