@@ -79,9 +79,10 @@ def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save
         print(f"[yellow]No existing feature dictionary found. Creating a new one at: {save_path}")
     
     file_list = os.listdir(dataset_path)
-    
+    extensions = (".jpg", ".jpeg", ".png")
+
     for idx, file in enumerate(track(file_list, total=len(file_list), description="Getting image features", complete_style="yellow")):
-        if file.endswith(".jpg"): # TODO: add JPEG, PNG etc.
+        if file.endswith(extensions):
             # Skip the file if it's already in the existing feature_dict
             if file in feature_dict:
                 print(f"Skipping [green]{file}[/green], already in feature_dict.")
