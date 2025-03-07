@@ -32,9 +32,13 @@ Ensure all dependencies are installed using the following command:
 
 ```pip install -r requirements.txt```
 
+To install the OpenAI's clip module, use the following command:
+
+````pip install git+https://github.com/openai/CLIP.git````
+
 ### Running the Script
 ```
-python cluster_images.py --image_dataset_path <path_to_image_dataset> \
+python3 cluster_images.py --image_dataset_path <path_to_image_dataset> \
                       --grid_folder <path_to_save_grid_images> \
                       --cluster_folder <path_to_save_clustered_images> \
                       --feature_dict_path <path_to_save_or_load_feature_dict> \
@@ -47,7 +51,7 @@ python cluster_images.py --image_dataset_path <path_to_image_dataset> \
 
 ### Example Command
 ```
-python cluster_images.py --image_dataset_path ./images \
+python3 cluster_images.py --image_dataset_path ./images \
                       --grid_folder ./grids \
                       --cluster_folder ./clusters \
                       --feature_dict_path ./features \
