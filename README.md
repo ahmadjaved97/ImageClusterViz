@@ -41,6 +41,7 @@ python cluster_images.py --image_dataset_path <path_to_image_dataset> \
                       --num_clusters <number_of_clusters> \
                       --model <model_type> \
                       --clustering_method <clustering_method> \
+                      --device <device name> \
                       [--use_feature_dict]
 ```
 
@@ -53,6 +54,7 @@ python cluster_images.py --image_dataset_path ./images \
                       --num_clusters 5 \
                       --model vit \
                       --clustering_method kmeans \
+                      --device cuda \
                       --use_feature_dict
 ```
 
