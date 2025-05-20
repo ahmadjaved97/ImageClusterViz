@@ -1,0 +1,18 @@
+[build-system]
+requires =  ["setuptools>=68", "wheel"]
+
+[project]
+name = "imageclusterviz"
+version = "0.1.0"
+description = "Lightweight image embedding and clustering"
+authors = [{name = "Ahmad Javed",  email = "ahmadjaved97@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "torch"             # for embeddings
+    "scikit-learn"      # for clustering
+    "pillow",           # for image IO and grids
+    ]
+
+[project.scripts]              # will give users a `imageviz` CLI later
+imageviz = "imageclusterviz.legacy_script:main"
