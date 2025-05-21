@@ -9,10 +9,18 @@ authors = [{name = "Ahmad Javed",  email = "ahmadjaved97@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "torch",             # for embeddings
-    "scikit-learn",      # for clustering
-    "pillow",           # for image IO and grids
+    "torch>=2.1",
+    "torchvision>=0.16",
+    "numpy>=1.23",
+    "pillow>=10.0",
+    "rich>=13.0",
+    "opencv-python>=4.9",
+    "scikit-learn>=1.4",
     ]
 
 [project.scripts]              # will give users a `imageviz` CLI later
 imageviz = "imageclusterviz.legacy_script:main"
+
+
+[tool.setuptools]
+packages = ["imageclusterviz"]
