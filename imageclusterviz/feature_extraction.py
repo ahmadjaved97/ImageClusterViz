@@ -2,7 +2,7 @@ import torch
 import torchvision.models as models
 from torchvision import transforms
 
-import clip
+# import clip
 
 
 def load_vit_model(weights=models.ViT_B_16_Weights.DEFAULT, device="cpu"):
@@ -98,10 +98,10 @@ def load_mobilenetv3_model(
     return mobilenet, preprocess
 
 
-def load_clip_model(weights="ViT-B/16", device="cpu"):
-    model, preprocess = clip.load(weights, device=device)
+# def load_clip_model(weights="ViT-B/16", device="cpu"):
+#     model, preprocess = clip.load(weights, device=device)
 
-    return model, preprocess
+#     return model, preprocess
 
 
 def extract_features(image, model, preprocess, model_type="vit", device="cpu"):
@@ -164,10 +164,10 @@ def extract_features(image, model, preprocess, model_type="vit", device="cpu"):
         feats = feats[:, 0]
         features = feats.cpu().detach().numpy()[0]
 
-    elif model_type == "clip":
-        with torch.no_grad():
-            features = model.encode_image(image)
-            features /= features.norm(dim=-1, keepdim=True)
-        features = features.cpu().detach().numpy()[0]
+    # elif model_type == "clip":
+    #     with torch.no_grad():
+    #         features = model.encode_image(image)
+    #         features /= features.norm(dim=-1, keepdim=True)
+    #     features = features.cpu().detach().numpy()[0]
 
     return features

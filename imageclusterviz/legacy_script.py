@@ -10,13 +10,12 @@ import shutil
 import argparse
 from .utils import create_image_grid, read_dict, save_dict
 from .feature_extraction import (
-    load_resnet50_model,
-    load_vit_model,
-    load_vgg16_model,
-    load_mobilenetv3_model,
-    load_clip_model,
     extract_features,
 )
+
+from ._embed import embed_dir
+from ._cluster import cluster_kmeans, cluster_gmm
+from ._vis import make_grid
 
 # add support for different models apart from resnet50 and ViT
 
@@ -136,63 +135,82 @@ def create_feature_dict(
     return feature_dict
 
 
+# def run_pipeline(
+#     image_dataset_path: str,
+#     grid_folder: str = "./",
+#     cluster_folder: str = "./",
+#     feature_dict_path: str = "./",
+#     num_clusters: int = 5,
+#     use_feature_dict: bool = False,
+#     model: str = "vit",
+#     clustering_method: str = "kmeans",
+#     device: str = "cpu",
+# ) -> None:
+#     if use_feature_dict and feature_dict_path is None:
+#         print("--feature_dict_path is required when --use_feature_dict is set")
+
+#     os.makedirs(cluster_folder, exist_ok=True)
+#     os.makedirs(grid_folder, exist_ok=True)
+
+#     if model == "vit":
+#         model, preprocess = load_vit_model(device=device)
+#     elif model == "resnet":
+#         model, preprocess = load_resnet50_model(device=device)
+#     elif model == "vgg16":
+#         model, preprocess = load_vgg16_model(device=device)
+#     elif model == "mobilenetv3":
+#         model, preprocess = load_mobilenetv3_model(device=device)
+#     elif model == "clip":
+#         model, preprocess = load_clip_model(device=device)
+
+#     if not use_feature_dict:
+#         # Delete existing feature dict if present
+#         if feature_dict_path and os.path.exists(
+#             os.path.join(feature_dict_path, "feature_dictionary.pkl")
+#         ):
+#             print(
+#                 f"Removing exisiting feature dictionary at: {os.path.join(feature_dict_path, 'feature_dictionary.pkl')}"
+#             )
+#             os.remove(os.path.join(feature_dict_path, "feature_dictionary.pkl"))
+#         # write a function/feature to add more info to feature dict such as dataset folder, model used, if they
+#         # match with the argument then load the old feature dict otherwise create a new one.
+#         image_feature_dict = create_feature_dict(
+#             image_dataset_path,
+#             model,
+#             preprocess,
+#             model,
+#             n=10,
+#             save_path=feature_dict_path,
+#             device=device,
+#         )
+#     else:
+#         # should be able to take a file path(such as .csv, .txt) as well/ currently only takes a folder path.
+#         image_feature_dict = read_dict(feature_dict_path)
+
+#     cluster_data = get_clustered_data(
+#         image_feature_dict, num_clusters, clustering_method
+#     )
+#     create_cluster_folders(cluster_data, image_dataset_path, cluster_folder)
+#     create_cluster_grids(cluster_data, image_dataset_path, grid_folder)
+
+
 def run_pipeline(
     image_dataset_path: str,
     grid_folder: str = "./",
-    cluster_folder: str = "./",
-    feature_dict_path: str = "./",
     num_clusters: int = 5,
-    use_feature_dict: bool = False,
     model: str = "vit",
     clustering_method: str = "kmeans",
     device: str = "cpu",
 ) -> None:
-    if use_feature_dict and feature_dict_path is None:
-        print("--feature_dict_path is required when --use_feature_dict is set")
 
-    os.makedirs(cluster_folder, exist_ok=True)
-    os.makedirs(grid_folder, exist_ok=True)
-
-    if model == "vit":
-        model, preprocess = load_vit_model(device=device)
-    elif model == "resnet":
-        model, preprocess = load_resnet50_model(device=device)
-    elif model == "vgg16":
-        model, preprocess = load_vgg16_model(device=device)
-    elif model == "mobilenetv3":
-        model, preprocess = load_mobilenetv3_model(device=device)
-    elif model == "clip":
-        model, preprocess = load_clip_model(device=device)
-
-    if not use_feature_dict:
-        # Delete existing feature dict if present
-        if feature_dict_path and os.path.exists(
-            os.path.join(feature_dict_path, "feature_dictionary.pkl")
-        ):
-            print(
-                f"Removing exisiting feature dictionary at: {os.path.join(feature_dict_path, 'feature_dictionary.pkl')}"
-            )
-            os.remove(os.path.join(feature_dict_path, "feature_dictionary.pkl"))
-        # write a function/feature to add more info to feature dict such as dataset folder, model used, if they
-        # match with the argument then load the old feature dict otherwise create a new one.
-        image_feature_dict = create_feature_dict(
-            image_dataset_path,
-            model,
-            preprocess,
-            model,
-            n=10,
-            save_path=feature_dict_path,
-            device=device,
-        )
+    vecs, names = embed_dir(image_dataset_path, model=model, device=device)
+    k = num_clusters
+    if clustering_method == "kmeans":
+        labels = cluster_kmeans(vecs, k)
     else:
-        # should be able to take a file path(such as .csv, .txt) as well/ currently only takes a folder path.
-        image_feature_dict = read_dict(feature_dict_path)
+        labels = cluster_gmm(vecs, k)
 
-    cluster_data = get_clustered_data(
-        image_feature_dict, num_clusters, clustering_method
-    )
-    create_cluster_folders(cluster_data, image_dataset_path, cluster_folder)
-    create_cluster_grids(cluster_data, image_dataset_path, grid_folder)
+    make_grid(image_dataset_path, labels).save(grid_folder / "grid.png")
 
 
 def main() -> None:
