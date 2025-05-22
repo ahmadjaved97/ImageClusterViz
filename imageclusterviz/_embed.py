@@ -12,9 +12,10 @@ _MODEL_REGISTRY: dict[str, dict] = {
         "ctor": lambda _: tvm.resnet50(weights=None),
         "default": tvm.ResNet50_Weights.IMAGENET1K_V2,
     },
+    # vit is not working check it
     "vit_b16": {
         "ctor": lambda _: tvm.vit_b_16(weights=None),
-        "default": tvm.ViT_B_16_Weights.IMAGENET1K_V1,
+        "default": tvm.ViT_B_16_Weights.DEFAULT,
     },
     "mobilenetv3": {
         "ctor": lambda _: tvm.mobilenet_v3_large(weights=None),
