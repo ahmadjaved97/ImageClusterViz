@@ -5,7 +5,6 @@ from sklearn.mixture import GaussianMixture
 from typing import Sequence, Dict, List
 from collections import defaultdict
 
-
 __all__ = ["cluster_kmeans", "cluster_gmm", "auto_k", "cluster_dict"]
 
 

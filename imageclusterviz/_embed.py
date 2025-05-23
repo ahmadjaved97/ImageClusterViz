@@ -114,6 +114,6 @@ def embed_dir(
             continue
         img = preprocess(Image.open(p).convert("RGB")).unsqueeze(0).to(device)
         vecs.append(_embed_tensor(net, img).cpu())
-        paths.append(p.name)
+        paths.append(str(Path(img_dir) / p.name))
 
     return np.vstack(vecs), paths

@@ -1,11 +1,17 @@
 from pathlib import Path
-from typing import Sequence, Tuple, List
+from typing import Sequence, Tuple, List, Mapping
 import math
 import numpy as np
 from PIL import Image
 import cv2
+import shutil
 
-__all__ = ["create_image_grid", "make_grid"]
+__all__ = [
+    "create_image_grid",
+    "make_grid",
+    "grid_per_cluster",
+    "copy_custers_to_folder",
+]
 
 
 # ----------------------------------------------------------------------
@@ -131,3 +137,69 @@ def make_grid(
         space_width=space_width,
     )
     return Image.fromarray(cv2.cvtColor(grid_bgr, cv2.COLOR_BGR2RGB))
+
+
+def grid_per_cluster(
+    clusters: Mapping[int, Sequence[str | Path]],
+    *,
+    thumb: Tuple[int, int] = (120, 120),
+    space: int = 10,
+    out_dir: str | Path = "cluster_grids",
+    cols: int | None = None,
+) -> Path | str:
+    """
+    Path to the folder that contains the grids.
+    """
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(exist_ok=True, parents=True)
+
+    for cid, paths in clusters.items():
+        images = [Image.open(p).convert("RGB") for p in paths]
+        if not images:
+            continue
+        grid_nd = create_image_grid(
+            images, num_cols=cols, image_size=thumb, space_width=space
+        )
+
+        grid_rgb = cv2.cvtColor(grid_nd, cv2.COLOR_BGR2RGB)
+        Image.fromarray(grid_rgb).save(out_dir / f"{cid}.png")
+
+    return out_dir
+
+
+def copy_custers_to_folder(
+    clusters: Mapping[int, Sequence[Path | str]],
+    *,
+    out_root: str | Path = "cluster_folders",
+) -> str | Path:
+    """
+    Copies images into <out_root>/<cluster_id>/' directories.
+
+    Parameters
+    ----------
+    clusters  : {label: [Path1, Path2,....]}  – usually the dict returned by
+                   `cluster_dict()`.
+    out_root  : root directory to create cluster sub-folders in.
+
+    Returns
+    -------
+    Path to *out_root* (so callers can open it and print it).
+
+    """
+
+    out_root = Path(out_root)
+    out_root.mkdir(exist_ok=True, parents=True)
+
+    for cid, files in clusters.items():
+        dest_dir = out_root / Path(str(cid))
+        dest_dir.mkdir(exist_ok=True)
+
+        for src in files:
+            src = Path(src)
+            target = dest_dir / src.name
+
+            if not target.exists():
+                shutil.copy2(src, target)
+
+    return out_root
