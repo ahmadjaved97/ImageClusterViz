@@ -24,3 +24,7 @@ imageviz = "imageclusterviz.legacy_script:main"
 
 [tool.setuptools]
 packages = ["imageclusterviz"]
+
+[project.optional-dependencies]
+timm  = ["timm>=0.9"]        # modern backbones       #1
+faiss = ["faiss-cpu>=1.8"]   # fast similarity search #1
