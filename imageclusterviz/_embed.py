@@ -9,16 +9,16 @@ from pathlib import Path
 
 _MODEL_REGISTRY: dict[str, dict] = {
     "resnet50": {
-        "ctor": lambda _: tvm.resnet50(weights=None),
+        "ctor": lambda weights: tvm.resnet50(weights=weights),
         "default": tvm.ResNet50_Weights.IMAGENET1K_V2,
     },
     # vit is not working check it
     "vit_b16": {
-        "ctor": lambda _: tvm.vit_b_16(weights=None),
+        "ctor": lambda weights: tvm.vit_b_16(weights=weights),
         "default": tvm.ViT_B_16_Weights.DEFAULT,
     },
     "mobilenetv3": {
-        "ctor": lambda _: tvm.mobilenet_v3_large(weights=None),
+        "ctor": lambda weights: tvm.mobilenet_v3_large(weights=weights),
         "default": tvm.MobileNet_V3_Large_Weights.IMAGENET1K_V2,
     },
     # Add new model below
@@ -58,6 +58,7 @@ def load_model(
 
     entry = _MODEL_REGISTRY[name]
     model = entry["ctor"](weights)
+    print(entry["ctor"])
 
     # Load offical weights or custom checkpoints
     if checkpoint is not None:
@@ -68,6 +69,8 @@ def load_model(
             weights = entry["default"]
         if weights is not None:
             model = entry["ctor"](weights)
+
+    print(weights)
 
     return model.eval().to(device)
 
@@ -109,7 +112,7 @@ def embed_dir(
     net = load_model(model, weights=weights, checkpoint=checkpoint, device=device)
     preprocess = _pil_preprocess()
     vecs, paths = [], []
-    for p in Path(img_dir).iterdir():
+    for p in sorted(Path(img_dir).iterdir()):
         if p.suffix.lower() not in (".jpg", ".jpeg", ".png", ".webp", ".bmp"):
             continue
         img = preprocess(Image.open(p).convert("RGB")).unsqueeze(0).to(device)
