@@ -1,3 +1,51 @@
-__pycache__
-*.pkl
-*.pickle
+# ─── Python byte-code & caches ─────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+*.log
+
+# pytest
+.pytest_cache/
+
+# Ruff, Black, coverage
+.coverage
+htmlcov/
+
+# ─── Virtual-envs ──────────────────────────────────────────────────────
+.venv/
+env/
+venv/
+
+# ─── Build / packaging artefacts ───────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+*.whl
+
+# ─── Editor & IDE files ────────────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ─── Jupyter / notebooks ───────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ─── OS & tooling clutter ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Project-specific generated outputs ───────────────────────────────
+# image grids and cluster folders produced by the script / library
+output_grids/
+clusters_*/
+feature_dicts/
+
+# ─── Optional large artefacts (comment out if you want them in Git) ───
+*.npy        # feature arrays
+*.npz
+*.pt         # torch checkpoints
+*.pkl        # pickle caches
