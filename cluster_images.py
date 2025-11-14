@@ -12,7 +12,7 @@ from sklearn.mixture import GaussianMixture
 import shutil
 import argparse
 from utils import create_image_grid,read_dict, save_dict
-from feature_extraction import load_resnet50_model, load_vit_model, load_vgg16_model,load_mobilenetv3_model, load_clip_model, load_dinov2_model, extract_features
+from feature_extraction import load_resnet50_model, load_vit_model, load_vgg16_model,load_mobilenetv3_model, load_clip_model, load_dinov2_model, load_swin_model, extract_features
 
 # add support for different models apart from resnet50 and ViT
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     parser.add_argument('--feature_dict_path', type=str, default='./', help='Path to save/load the feature dictionary (default: current directory).')
     parser.add_argument('--num_clusters', type=int, default=5, help='Number of clusters.')
     parser.add_argument('--use_feature_dict', action='store_true', help='Use existing feature dictionary instead of recalculating.')
-    parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3', 'clip', 'dinov2'], default='vit', help='Model to use for feature extraction (default: ViT).')
+    parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3', 'clip', 'dinov2', 'swin'], default='vit', help='Model to use for feature extraction (default: ViT).')
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm'], default='kmeans', help='Clustering method to use (default: KMeans).')
     parser.add_argument('--device', type=str, choices=['cuda', 'cpu'], default='cpu', help='Device used for inference')
     # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
@@ -144,6 +144,8 @@ if __name__ == "__main__":
         model, preprocess = load_clip_model(device=args.device)
     elif args.model == 'dinov2':
         model, preprocess = load_dinov2_model(device=args.device)
+    elif args.model == 'swin':
+        model, preprocess = load_swin_model(device=args.device)
     
 
 
