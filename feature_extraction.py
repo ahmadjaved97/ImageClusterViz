@@ -91,6 +91,21 @@ def load_clip_model(weights="ViT-B/16", device="cpu"):
 
   return model, preprocess
 
+def load_dinov2_model(weights="dinov2_vits14", device='cpu'):
+  """
+  Loads a pretrained dinov2 small model
+  """
+  dinov2 = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14').to(device)
+  dinov2.eval()
+  preprocess = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+  ])
+
+  return dinov2, preprocess
+
 def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
     """
     Extracts features from a given image using a specified pre-trained model (Vision Transformer or ResNet).
@@ -156,5 +171,10 @@ def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
         features =  model.encode_image(image)
         features /= features.norm(dim=-1, keepdim=True)
       features = features.cpu().detach().numpy()[0]
+    
+    elif model_type == 'dinov2':
+      with torch.no_grad():
+        features = model(image)
+      features = features[0].cpu().detach().numpy()
 
     return features
