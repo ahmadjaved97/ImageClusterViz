@@ -106,6 +106,18 @@ def load_dinov2_model(weights="dinov2_vits14", device='cpu'):
 
   return dinov2, preprocess
 
+
+def load_swin_model(weights=models.Swin_V2_S_Weights.DEFAULT, device='cpu'):
+  """
+  Loads a Swin V2 model.
+  """
+  swin_v2_s = models.swin_v2_s(weights=weights).to(device)
+  swin_v2_s.eval()
+  swin_v2_s.head = torch.nn.Identity()
+  preprocess = weights.transforms()
+  
+  return swin_v2_s, preprocess
+
 def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
     """
     Extracts features from a given image using a specified pre-trained model (Vision Transformer or ResNet).
@@ -173,6 +185,11 @@ def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
       features = features.cpu().detach().numpy()[0]
     
     elif model_type == 'dinov2':
+      with torch.no_grad():
+        features = model(image)
+      features = features[0].cpu().detach().numpy()
+    
+    elif model_type == 'swin':
       with torch.no_grad():
         features = model(image)
       features = features[0].cpu().detach().numpy()
