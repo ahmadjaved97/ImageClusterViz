@@ -118,6 +118,17 @@ def load_swin_model(weights=models.Swin_V2_S_Weights.DEFAULT, device='cpu'):
   
   return swin_v2_s, preprocess
 
+def load_efficientnet_model(weights=models.EfficientNet_V2_S_Weights.DEFAULT, device='cpu'):
+  """
+  Loads efficientNet v2 model.
+  """
+  efficientnet_v2_s = models.efficientnet_v2_s(weights=weights).to(device)
+  efficientnet_v2_s.eval()
+  efficientnet_v2_s.head = torch.nn.Identity()
+  preprocess = weights.transforms()
+
+  return efficientnet_v2_s, preprocess
+
 def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
     """
     Extracts features from a given image using a specified pre-trained model (Vision Transformer or ResNet).
@@ -190,6 +201,11 @@ def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
       features = features[0].cpu().detach().numpy()
     
     elif model_type == 'swin':
+      with torch.no_grad():
+        features = model(image)
+      features = features[0].cpu().detach().numpy()
+    
+    elif model_type == 'efficientnet':
       with torch.no_grad():
         features = model(image)
       features = features[0].cpu().detach().numpy()
