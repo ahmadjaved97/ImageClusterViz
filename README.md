@@ -15,6 +15,7 @@ This is particularly useful for applications involving large datasets of images 
 | CLIP                     |
 |DINO V2                   |
 |SWIN(V2) Transformer      |
+|EfficientNetV2            |
 
 ### Key Features:
 - **Feature Extraction:** Utilizes pre-trained deep learning models to extract features from images.
@@ -70,7 +71,7 @@ python3 cluster_images.py --image_dataset_path ./images \
 - --**cluster_folder**: Path to save images sorted into clusters (default: current directory).
 - --**feature_dict_path:** Path to save/load the feature dictionary (default: current directory).
 - --**num_clusters**: The number of clusters to create.
-- --**model**: The model type to use for feature extraction, vit, swin resnet, vgg16, mobilenetv3, clip, dinov2.
+- --**model**: The model type to use for feature extraction, vit, swin resnet, vgg16, mobilenetv3, efficientnet, clip, dinov2.
 - --**clustering_method**: The method to use for clustering, either kmeans or gmm.
 - --**use_feature_dict**: Use this flag if you want to use an existing feature dictionary instead of recalculating it.
 
