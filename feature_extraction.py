@@ -129,6 +129,18 @@ def load_efficientnet_model(weights=models.EfficientNet_V2_S_Weights.DEFAULT, de
 
   return efficientnet_v2_s, preprocess
 
+
+def load_convnext_model(weights=models.ConvNeXt_Small_Weights.DEFAULT, device='cpu'):
+  """
+  Loads a ConvneXt model.
+  """
+  convnext = models.convnext_small(weights=weights).to(device)
+  convnext.eval()
+  convnext.classifier[2] = torch.nn.Identity()  # remove final layer
+  preprocess = weights.transforms()
+
+  return convnext, preprocess
+
 def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
     """
     Extracts features from a given image using a specified pre-trained model (Vision Transformer or ResNet).
@@ -206,6 +218,11 @@ def extract_features(image, model, preprocess, model_type='vit', device='cpu'):
       features = features[0].cpu().detach().numpy()
     
     elif model_type == 'efficientnet':
+      with torch.no_grad():
+        features = model(image)
+      features = features[0].cpu().detach().numpy()
+    
+    elif model_type == 'convnext':
       with torch.no_grad():
         features = model(image)
       features = features[0].cpu().detach().numpy()
