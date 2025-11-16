@@ -6,17 +6,17 @@ This project focuses on organizing and visualizing a collection of images using 
 
 This is particularly useful for applications involving large datasets of images where manual sorting and organization would be impractical. By automatically grouping similar images, it helps in data management, curation, and analysis tasks.
 
-| Model's Supported        |
-|--------------------------|
-| Vision Transformer (ViT) |
-| ResNet-50                |
-| VGG-16                   |
-| MobileNet-V3             |
-| CLIP                     |
-|DINO V2                   |
-|SWIN(V2) Transformer      |
-|EfficientNetV2            |
-|ConvNeXt                  |
+| Model's Supported        |Clustering Algorithms     |
+|--------------------------|--------------------------|
+| Vision Transformer (ViT) |KMeans                    |
+| ResNet-50                |Gausian Mixture Model(GMM)|
+| VGG-16                   |HDBSCAN                   |
+| MobileNet-V3             |                          |
+| CLIP                     |                          |
+|DINO V2                   |                          |
+|SWIN(V2) Transformer      |                          |
+|EfficientNetV2            |                          |
+|ConvNeXt                  |                          |
 
 ### Key Features:
 - **Feature Extraction:** Utilizes pre-trained deep learning models to extract features from images.
