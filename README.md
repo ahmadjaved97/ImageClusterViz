@@ -1,4 +1,4 @@
-# Image Clustering and Grid Creation
+# Image Clustering and Visualization
 
 ## Overview
 
