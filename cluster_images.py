@@ -26,10 +26,28 @@ def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans')
     filenames = list(feature_dict.keys())
     feature_vectors = list(feature_dict.values())
     feature_vectors = np.array(feature_vectors)
+    num_feature_vectors = len(feature_vectors)
 
     if clustering_method == 'gmm':
         gmm = GaussianMixture(n_components=num_clusters, random_state=42)
         cluster_labels = gmm.fit_predict(feature_vectors)
+    
+    elif clustering_method == 'hdbscan':
+        import hdbscan
+        if num_feature_vectors < 2000:
+            min_cluster_size = 10
+            min_samples = 1
+        elif num_feature_vectors >= 2000 and num_feature_vectors < 10000:
+            min_cluster_size = 20
+            min_samples = 3
+        else:
+            min_cluster_size = 30
+            min_samples = 5
+
+        hdbscan_clustering = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size,
+                                            min_samples=min_samples,
+                                            metric='euclidean')
+        cluster_labels = hdbscan_clustering.fit_predict(feature_vectors)
     else:  # Default to KMeans
         kmeans = KMeans(n_clusters=num_clusters, n_init=15, random_state=42)
         cluster_labels = kmeans.fit_predict(feature_vectors)
@@ -116,7 +134,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_clusters', type=int, default=5, help='Number of clusters.')
     parser.add_argument('--use_feature_dict', action='store_true', help='Use existing feature dictionary instead of recalculating.')
     parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3', 'clip', 'dinov2', 'swin', 'efficientnet', 'convnext'], default='vit', help='Model to use for feature extraction (default: ViT).')
-    parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm'], default='kmeans', help='Clustering method to use (default: KMeans).')
+    parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm', 'hdbscan'], default='kmeans', help='Clustering method to use (default: KMeans).')
     parser.add_argument('--device', type=str, choices=['cuda', 'cpu'], default='cpu', help='Device used for inference')
     # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
     # of images in the folder.
