@@ -14,11 +14,11 @@ import argparse
 from utils import create_image_grid,read_dict, save_dict
 from feature_extraction import load_resnet50_model, load_vit_model, load_vgg16_model,load_mobilenetv3_model, load_clip_model, load_dinov2_model, load_swin_model, extract_features
 from feature_extraction import load_efficientnet_model, load_convnext_model
-# add support for different models apart from resnet50 and ViT
+from dimensionality_reduction import create_reducer
 
 
 
-def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans'):
+def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans', feature_reduction=None):
     """
     Clusters the feature vectors from images into a specified number of clusters using either KMeans or Gaussian Mixture Models (GMM). 
     It returns a dictionary mapping each cluster ID to a list of corresponding image filenames.
@@ -27,6 +27,12 @@ def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans')
     feature_vectors = list(feature_dict.values())
     feature_vectors = np.array(feature_vectors)
     num_feature_vectors = len(feature_vectors)
+
+    if feature_reduction:
+        reduced_features = feature_reduction.fit_transform(feature_vectors)
+        # print(reduced_features.explained_variance_ratio_.cumsum()[:20])
+        feature_vectors = reduced_features
+
 
     if clustering_method == 'gmm':
         gmm = GaussianMixture(n_components=num_clusters, random_state=42)
@@ -136,6 +142,8 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3', 'clip', 'dinov2', 'swin', 'efficientnet', 'convnext'], default='vit', help='Model to use for feature extraction (default: ViT).')
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm', 'hdbscan'], default='kmeans', help='Clustering method to use (default: KMeans).')
     parser.add_argument('--device', type=str, choices=['cuda', 'cpu'], default='cpu', help='Device used for inference')
+    parser.add_argument('--reducer', type=str, choices=['pca',], default=None, help='Dimensionality reduction algorithm to be used.')
+    parser.add_argument('--reduced_components', type=int, default=50, help='Number of features after dimensionality reduction.')
     # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
     # of images in the folder.
 
@@ -170,6 +178,11 @@ if __name__ == "__main__":
         model, preprocess = load_convnext_model(device=args.device)
     
 
+    dimensionality_reducer = None
+    if args.reducer:
+        dimensionality_reducer = create_reducer(args.reducer, n_components=args.reduced_components)
+    
+
 
     if not args.use_feature_dict:
         # Delete existing feature dict if present
@@ -183,6 +196,6 @@ if __name__ == "__main__":
         # should be able to take a file path(such as .csv, .txt) as well/ currently only takes a folder path.
         image_feature_dict = read_dict(args.feature_dict_path)
 
-    cluster_data = get_clustered_data(image_feature_dict, args.num_clusters, args.clustering_method)
+    cluster_data = get_clustered_data(image_feature_dict, args.num_clusters, args.clustering_method, dimensionality_reducer)
     create_cluster_folders(cluster_data, args.image_dataset_path, args.cluster_folder)
     create_cluster_grids(cluster_data, args.image_dataset_path, args.grid_folder)
