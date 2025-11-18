@@ -6,17 +6,17 @@ This project focuses on organizing and visualizing a collection of images using 
 
 This is particularly useful for applications involving large datasets of images where manual sorting and organization would be impractical. By automatically grouping similar images, it helps in data management, curation, and analysis tasks.
 
-| Model's Supported        |Clustering Algorithms     |
-|--------------------------|--------------------------|
-| Vision Transformer (ViT) |KMeans                    |
-| ResNet-50                |Gausian Mixture Model(GMM)|
-| VGG-16                   |HDBSCAN                   |
-| MobileNet-V3             |                          |
-| CLIP                     |                          |
-|DINO V2                   |                          |
-|SWIN(V2) Transformer      |                          |
-|EfficientNetV2            |                          |
-|ConvNeXt                  |                          |
+| Model's Supported        |Clustering Algorithms     |Dimensionality Reduction |
+|--------------------------|--------------------------|--------------------------
+| Vision Transformer (ViT) |KMeans                    |PCA                      |
+| ResNet-50                |Gausian Mixture Model(GMM)|                         |
+| VGG-16                   |HDBSCAN                   |                         |
+| MobileNet-V3             |                          |                         |
+| CLIP                     |                          |                         |
+|DINO V2                   |                          |                         |
+|SWIN(V2) Transformer      |                          |                         |
+|EfficientNetV2            |                          |                         |
+|ConvNeXt                  |                          |                         |
 
 ### Key Features:
 - **Feature Extraction:** Utilizes pre-trained deep learning models to extract features from images.
@@ -49,6 +49,7 @@ python3 cluster_images.py --image_dataset_path <path_to_image_dataset> \
                       --num_clusters <number_of_clusters> \
                       --model <model_type> \
                       --clustering_method <clustering_method> \
+                      --reducer <dimensionality_reduction_method>                  #(optional)
                       --device <device name> \
                       [--use_feature_dict]
 ```
@@ -75,6 +76,8 @@ python3 cluster_images.py --image_dataset_path ./images \
 - --**model**: The model type to use for feature extraction (vit, swin, resnet, vgg16, mobilenetv3, efficientnet, convnext, clip, dinov2).
 - --**clustering_method**: The method to use for clustering, either kmeans, hdbscan or gmm.
 - --**use_feature_dict**: Use this flag if you want to use an existing feature dictionary instead of recalculating it.
+- --**reducer**: Dimensionality reduction method to be used (PCA, default: None)
+- --**reduced_components**: Number of components after reduction using the dimensionality reduction method (default:50).
 
 
 ### Sample Output
