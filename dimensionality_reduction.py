@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from sklearn.decomposition import PCA, IncrementalPCA
-
+from sklearn.manifold import TSNE
 
 class DimensionalityReducer(ABC):
     """Abstract base class for dimensionality reduction algorithms."""
@@ -87,9 +87,55 @@ class PCAReducer(DimensionalityReducer):
             raise ValueError("Model not fitted. Call fit() first.")
         return self.model.transform(features)
 
+class UMAPReducer(DimensionalityReducer):
+    """
+    UMAP Dimensionality Reduction.
+    """
+
+    def __init__(self, n_components=50, n_neighbors=15, min_dist=0.1, metric='euclidean',
+                random_state=42, n_jobs=-1, **kwargs):
+        super().__init__(n_components=n_components, **kwargs)
+        self.n_neighbors = n_neighbors
+        self.min_dist = min_dist
+        self.metric = metric
+        self.random_state = random_state
+        self.n_jobs = n_jobs
+    
+    def fit(self, features):
+        try:
+            import umap
+        except ImportError:
+            raise ImportError("umap-learn not installed. Install with pip install umap-learn.")
+        
+        self.original_dim = features.shape[1]
+
+        self.model = umap.UMAP(
+            n_components=self.n_components,
+            n_neighbors=self.n_neighbors,
+            min_dist=self.min_dist,
+            metric=self.metric,
+            random_state=self.random_state,
+            n_jobs=self.n_jobs
+        )
+
+        self.model.fit(features)
+        self.reduced_dim = self.n_components
+        self.is_fitted = True
+
+        return self
+    
+    def transform(self, features):
+        if not self.is_fitted:
+            raise ValueError("Model not fitted. Call fit() first.")
+        return self.model.transform(features)
+
+
+
+
 
 REDUCTION_ALGORITHMS = {
     'pca': PCAReducer,
+    'umap': UMAPReducer,
 }
 
 def create_reducer(algorithm, **kwargs):

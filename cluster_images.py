@@ -55,6 +55,7 @@ def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans',
                                             metric='euclidean')
         cluster_labels = hdbscan_clustering.fit_predict(feature_vectors)
     else:  # Default to KMeans
+        print(feature_vectors.shape)
         kmeans = KMeans(n_clusters=num_clusters, n_init=15, random_state=42)
         cluster_labels = kmeans.fit_predict(feature_vectors)
 
@@ -142,7 +143,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3', 'clip', 'dinov2', 'swin', 'efficientnet', 'convnext'], default='vit', help='Model to use for feature extraction (default: ViT).')
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm', 'hdbscan'], default='kmeans', help='Clustering method to use (default: KMeans).')
     parser.add_argument('--device', type=str, choices=['cuda', 'cpu'], default='cpu', help='Device used for inference')
-    parser.add_argument('--reducer', type=str, choices=['pca',], default=None, help='Dimensionality reduction algorithm to be used.')
+    parser.add_argument('--reducer', type=str, choices=['pca', 'umap'], default=None, help='Dimensionality reduction algorithm to be used.')
     parser.add_argument('--reduced_components', type=int, default=50, help='Number of features after dimensionality reduction.')
     # add argument  and modify function to limit the number of images for clustering. also provide a check to see if the number defined is <= the number
     # of images in the folder.
@@ -180,7 +181,8 @@ if __name__ == "__main__":
 
     dimensionality_reducer = None
     if args.reducer:
-        dimensionality_reducer = create_reducer(args.reducer, n_components=args.reduced_components)
+        print("Reduction used: ", args.reducer)
+        dimensionality_reducer = create_reducer(algorithm=args.reducer, n_components=args.reduced_components)
     
 
 
