@@ -55,7 +55,6 @@ def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans',
                                             metric='euclidean')
         cluster_labels = hdbscan_clustering.fit_predict(feature_vectors)
     else:  # Default to KMeans
-        print(feature_vectors.shape)
         kmeans = KMeans(n_clusters=num_clusters, n_init=15, random_state=42)
         cluster_labels = kmeans.fit_predict(feature_vectors)
 
