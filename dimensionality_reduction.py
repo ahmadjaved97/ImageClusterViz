@@ -130,12 +130,79 @@ class UMAPReducer(DimensionalityReducer):
         return self.model.transform(features)
 
 
+class TSNEReducer(DimensionalityReducer):
+    """
+    t-SNE dimensionality reduction. Only used for visualization.
+
+    """
+    def __init__(self, n_components=2, perplexity=30.0,
+                learning_rate=200, n_iter=1000,
+                metric='euclidean', random_state=42,
+                n_jobs=-1, **kwargs):
+        
+        super().__init__(n_components, **kwargs)
+        self.perplexity = perplexity
+        self.learning_rate = learning_rate
+        self.n_iter = n_iter
+        self.metric = metric
+        self.random_state = random_state
+        self._embedded_features = None
+    
+    def fit(self, features):
+        self.original_dim = features.shape[1]
+
+
+        perplexity = min(self.perplexity, (features.shape[0] - 1) / 3)
+
+        self.model = TSNE(
+            n_components = self.n_components,
+            perplexity = perplexity,
+            learning_rate = self.learning_rate,
+            n_iter = self.n_iter,
+            metric = self.metric,
+            random_state = self.random_state,
+            n_jobs = self.n_jobs
+        )
+
+        self.reduced_dim = self.n_components
+        self.is_fitted = True
+
+        return self
+    
+    def transform(self, features):
+        raise NotImplementedError(
+            "t-SNE does not support transform(). "
+            "You must use fit_transform() and canot transform new data."
+        )
+    
+    def fit_transform(self, features):
+        self.original_dim = features.shape[1]
+
+        perplexity = min(self.perplexity, (features.shape[0] - 1) / 3)
+
+        self.model = TSNE(
+            n_components = self.n_components,
+            perplexity = perplexity,
+            learning_rate = self.learning_rate,
+            n_iter = self.n_iter,
+            metric = self.metric,
+            random_state = self.random_state,
+            n_jobs = self.n_jobs
+        )
+
+        self._embedded_features = self.model.fit_transform(features)
+        self.reduced_dim = self.n_components
+        self.is_fitted = True
+
+        return self._embedded_features
 
 
 
 REDUCTION_ALGORITHMS = {
     'pca': PCAReducer,
     'umap': UMAPReducer,
+    'tsne': TSNEReducer,
+    't-sne': TSNEReducer,
 }
 
 def create_reducer(algorithm, **kwargs):
