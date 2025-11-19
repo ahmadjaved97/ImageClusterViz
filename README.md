@@ -9,7 +9,7 @@ This is particularly useful for applications involving large datasets of images 
 | Model's Supported        |Clustering Algorithms     |Dimensionality Reduction |
 |--------------------------|--------------------------|--------------------------
 | Vision Transformer (ViT) |KMeans                    |PCA                      |
-| ResNet-50                |Gausian Mixture Model(GMM)|                         |
+| ResNet-50                |Gausian Mixture Model(GMM)|UMAP                     |
 | VGG-16                   |HDBSCAN                   |                         |
 | MobileNet-V3             |                          |                         |
 | CLIP                     |                          |                         |
@@ -76,7 +76,7 @@ python3 cluster_images.py --image_dataset_path ./images \
 - --**model**: The model type to use for feature extraction (vit, swin, resnet, vgg16, mobilenetv3, efficientnet, convnext, clip, dinov2).
 - --**clustering_method**: The method to use for clustering, either kmeans, hdbscan or gmm.
 - --**use_feature_dict**: Use this flag if you want to use an existing feature dictionary instead of recalculating it.
-- --**reducer**: Dimensionality reduction method to be used (PCA, default: None)
+- --**reducer**: Dimensionality reduction method to be used (PCA, UMAP, default: None)
 - --**reduced_components**: Number of components after reduction using the dimensionality reduction method (default:50).
 
 
