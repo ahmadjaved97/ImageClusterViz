@@ -16,3 +16,15 @@ extractor = ViTExtractor(variant='b_16', device='cpu')
 features = extractor.extract_features(image.convert("RGB"))
 print(features[0])
 print(features[0].shape)
+
+# Dino V2
+dinov2_extractor = create_feature_extractor(model_type='dinov2', device='cuda')
+features = dinov2_extractor.extract_features(image.convert('RGB'))
+print(features[0])
+print(features[0].shape)
+
+# Efficient Net
+efficientnet_extractor = create_feature_extractor(model_type='efficientnet', variant='s', device='cpu')
+features = efficientnet_extractor.extract_features(image.convert('RGB'))
+print(features[0])
+print(features[0].shape)

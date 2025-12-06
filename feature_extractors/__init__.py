@@ -10,7 +10,10 @@ __all__ = [
     'FeatureExtractor',
     'ViTExtractor',
     'ResNetExtractor',
-    'create_feature_extractor'
+    'EfficientNetExtractor',
+    'DINOv2Extractor',
+    'create_feature_extractor',
+    
 ]
 
 __version__ = '1.0.0'

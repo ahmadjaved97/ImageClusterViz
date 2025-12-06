@@ -16,9 +16,15 @@ def create_feature_extractor(model_type, variant=None, device='cpu', **kwargs):
     elif model_type == 'resnet':
         from .resnet import ResNetExtractor
         extractors['resnet'] = ResNetExtractor
+    elif model_type == 'efficientnet':
+        from .efficientnet import EfficientNetExtractor
+        extractors['efficientnet'] = EfficientNetExtractor
+    elif model_type == 'dinov2':
+        from .dinov2 import DinoV2FeatureExtractor
+        extractors['dinov2'] = DinoV2FeatureExtractor
     else:
         raise ValueError(f"Unknown model type: {model_type}"
-                        f"Supported types: vit, resnet, .....")
+                        f" Supported types: vit, resnet, efficientnet, dinov2, .....")
     
     if variant is not None:
         kwargs['variant'] = variant
