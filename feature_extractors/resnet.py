@@ -17,7 +17,7 @@ class ResNetExtractor(FeatureExtractor):
         '152': (models.resnet152, models.ResNet152_Weights),
     }
 
-    def __init__(self, variant=50, weights='DEFAULT',
+    def __init__(self, variant='50', weights='DEFAULT',
                 custom_weights_path=None, device='cpu'):
         
         self.variant = variant

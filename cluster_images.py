@@ -12,8 +12,7 @@ from sklearn.mixture import GaussianMixture
 import shutil
 import argparse
 from utils import create_image_grid,read_dict, save_dict
-from feature_extraction import load_resnet50_model, load_vit_model, load_vgg16_model,load_mobilenetv3_model, load_clip_model, load_dinov2_model, load_swin_model, extract_features
-from feature_extraction import load_efficientnet_model, load_convnext_model
+from feature_extractors.factory import create_feature_extractor
 from dimensionality_reduction import create_reducer
 
 
@@ -90,7 +89,7 @@ def create_cluster_grids(cluster_data, source_path, output_folder):
         cv2.imwrite(output_path, grid)
 
 
-def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save_path=".", device='cpu'):
+def create_feature_dict(dataset_path, feature_extractor,  n=10, save_path="."):
     """
     Creates a dictionary mapping image filenames to their corresponding feature vectors, extracted using the specified model.
     """
@@ -115,7 +114,7 @@ def create_feature_dict(dataset_path, model, preprocess, model_type,  n=10, save
             image_path = os.path.join(dataset_path, file)
             try:
                 image = Image.open(image_path).convert('RGB')
-                image_feature = extract_features(image, model, preprocess, model_type, device)
+                image_feature = feature_extractor.extract_features(image)[0]
                 feature_dict[file] = image_feature
             except Exception as e:
                 print(f"Error processing [red]{file}[/red]: {str(e)}")
@@ -139,7 +138,7 @@ if __name__ == "__main__":
     parser.add_argument('--feature_dict_path', type=str, default='./', help='Path to save/load the feature dictionary (default: current directory).')
     parser.add_argument('--num_clusters', type=int, default=5, help='Number of clusters.')
     parser.add_argument('--use_feature_dict', action='store_true', help='Use existing feature dictionary instead of recalculating.')
-    parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg16', 'mobilenetv3', 'clip', 'dinov2', 'swin', 'efficientnet', 'convnext'], default='vit', help='Model to use for feature extraction (default: ViT).')
+    parser.add_argument('--model', type=str, choices=['vit', 'resnet', 'vgg', 'mobilenet', 'clip', 'dinov2', 'swin', 'efficientnet', 'convnext'], default='vit', help='Model to use for feature extraction (default: ViT).')
     parser.add_argument('--clustering_method', type=str, choices=['kmeans', 'gmm', 'hdbscan'], default='kmeans', help='Clustering method to use (default: KMeans).')
     parser.add_argument('--device', type=str, choices=['cuda', 'cpu'], default='cpu', help='Device used for inference')
     parser.add_argument('--reducer', type=str, choices=['pca', 'umap'], default=None, help='Dimensionality reduction algorithm to be used.')
@@ -158,25 +157,7 @@ if __name__ == "__main__":
     os.makedirs(args.cluster_folder, exist_ok=True)
     os.makedirs(args.grid_folder, exist_ok=True)
 
-    if args.model == 'vit':
-        model, preprocess = load_vit_model(device=args.device)
-    elif args.model == 'resnet':
-        model, preprocess = load_resnet50_model(device=args.device)
-    elif args.model == 'vgg16':
-        model, preprocess = load_vgg16_model(device=args.device)
-    elif args.model == 'mobilenetv3':
-        model, preprocess = load_mobilenetv3_model(device=args.device)
-    elif args.model == 'clip':
-        model, preprocess = load_clip_model(device=args.device)
-    elif args.model == 'dinov2':
-        model, preprocess = load_dinov2_model(device=args.device)
-    elif args.model == 'swin':
-        model, preprocess = load_swin_model(device=args.device)
-    elif args.model == 'efficientnet':
-        model, preprocess = load_efficientnet_model(device=args.device)
-    elif args.model == 'convnext':
-        model, preprocess = load_convnext_model(device=args.device)
-    
+    feature_extractor = create_feature_extractor(model_type=args.model, device=args.device)
 
     dimensionality_reducer = None
     if args.reducer:
@@ -192,7 +173,7 @@ if __name__ == "__main__":
             os.remove(os.path.join(args.feature_dict_path, "feature_dictionary.pkl"))
         # write a function/feature to add more info to feature dict such as dataset folder, model used, if they
         # match with the argument then load the old feature dict otherwise create a new one.
-        image_feature_dict = create_feature_dict(args.image_dataset_path, model, preprocess, args.model, n=10, save_path=args.feature_dict_path, device=args.device)
+        image_feature_dict = create_feature_dict(args.image_dataset_path, feature_extractor, n=10, save_path=args.feature_dict_path)
     else:
         # should be able to take a file path(such as .csv, .txt) as well/ currently only takes a folder path.
         image_feature_dict = read_dict(args.feature_dict_path)
