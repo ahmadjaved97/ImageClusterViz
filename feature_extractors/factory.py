@@ -22,6 +22,12 @@ def create_feature_extractor(model_type, variant=None, device='cpu', **kwargs):
     elif model_type == 'dinov2':
         from .dinov2 import DinoV2FeatureExtractor
         extractors['dinov2'] = DinoV2FeatureExtractor
+    elif model_type == 'mobilenet':
+        from .mobilenet import MobileNetV3FeatureExtractor
+        extractors['mobilenet'] = MobileNetV3FeatureExtractor
+    elif model_type == 'clip':
+        from .clip import CLIPExtractor
+        extractors['clip'] = CLIPExtractor
     else:
         raise ValueError(f"Unknown model type: {model_type}"
                         f" Supported types: vit, resnet, efficientnet, dinov2, .....")
