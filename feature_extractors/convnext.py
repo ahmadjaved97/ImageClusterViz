@@ -1,0 +1,58 @@
+"""Convnext feature extractor."""
+import torch
+import torchvision.models as models
+from torchvision import transforms
+
+from .base import FeatureExtractor
+
+
+class ConvNeXtExtractor(FeatureExtractor):
+    """ConvNeXt feature extractor with variants."""
+    
+    VARIANTS = {
+        'tiny': (models.convnext_tiny, models.ConvNeXt_Tiny_Weights),
+        'small': (models.convnext_small, models.ConvNeXt_Small_Weights),
+        'base': (models.convnext_base, models.ConvNeXt_Base_Weights),
+        'large': (models.convnext_large, models.ConvNeXt_Large_Weights),
+    }
+    
+    def __init__(self, variant = 'small', weights = 'DEFAULT',
+                 custom_weights_path = None, device = 'cpu'):
+        self.variant = variant.lower()
+        self.weights_name = weights
+        self.custom_weights_path = custom_weights_path
+        super().__init__(device)
+        self.load_model()
+    
+    def load_model(self):
+        if self.variant not in self.VARIANTS:
+            raise ValueError(f"Unknown ConvNeXt variant: {self.variant}. "
+                           f"Available: {list(self.VARIANTS.keys())}")
+        
+        model_fn, weights_enum = self.VARIANTS[self.variant]
+        
+        if self.weights_name is None:
+            weights = None
+        else:
+            weights = getattr(weights_enum, self.weights_name, weights_enum.DEFAULT)
+        
+        self.model = model_fn(weights=weights).to(self.device)
+        self.model.eval()
+        self.model.classifier[2] = torch.nn.Identity()
+        
+        if weights:
+            self.preprocess = weights.transforms()
+        else:
+            self.preprocess = transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                                    std=[0.229, 0.224, 0.225])
+            ])
+        
+        if self.custom_weights_path:
+            self.load_custom_weights(self.custom_weights_path)
+    
+    def _forward(self, image_tensor: torch.Tensor) -> torch.Tensor:
+        return self.model(image_tensor)
