@@ -1,7 +1,4 @@
 import os
-import torch
-import torchvision.models as models
-from torchvision import transforms
 from PIL import Image
 import numpy as np
 from rich import print
