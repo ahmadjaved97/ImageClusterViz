@@ -28,6 +28,12 @@ def create_feature_extractor(model_type, variant=None, device='cpu', **kwargs):
     elif model_type == 'clip':
         from .clip import CLIPExtractor
         extractors['clip'] = CLIPExtractor
+    elif model_type == 'swin':
+        from .swin import SwinExtractor
+        extractors['swin'] = SwinExtractor
+    elif model_type == 'vgg':
+        from .vgg import VGG16Extractor
+        extractors['vgg'] = VGG16Extractor
     else:
         raise ValueError(f"Unknown model type: {model_type}"
                         f" Supported types: vit, resnet, efficientnet, dinov2, .....")
