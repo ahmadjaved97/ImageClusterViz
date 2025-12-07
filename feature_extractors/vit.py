@@ -40,7 +40,7 @@ class ViTExtractor(FeatureExtractor):
         elif self.weights_name == 'DEFAULT':
             weights = weights_enum.DEFAULT
         else:
-            weights = self.getattr(weights_enum, self.weights_name, weights_enum.DEFAULT)
+            weights = getattr(weights_enum, self.weights_name, weights_enum.DEFAULT)
         
         self.model = model_fn(weights=weights).to(self.device)
         self.model.eval()

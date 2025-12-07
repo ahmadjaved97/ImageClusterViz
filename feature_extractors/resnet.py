@@ -39,7 +39,7 @@ class ResNetExtractor(FeatureExtractor):
         elif self.weights_name == 'DEFAULT':
             weights = weights_enum.DEFAULT
         else:
-            weights = self.getattr(weights_enum, self.weights_name, weights_enum.DEFAULT)
+            weights = getattr(weights_enum, self.weights_name, weights_enum.DEFAULT)
         
         resnet = model_fn(weights=weights).to(self.device)
         resnet.eval()
