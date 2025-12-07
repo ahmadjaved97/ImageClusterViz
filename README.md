@@ -73,7 +73,7 @@ python3 cluster_images.py --image_dataset_path ./images \
 - --**cluster_folder**: Path to save images sorted into clusters (default: current directory).
 - --**feature_dict_path:** Path to save/load the feature dictionary (default: current directory).
 - --**num_clusters**: The number of clusters to create (does not affect hdbscan).
-- --**model**: The model type to use for feature extraction (vit, swin, resnet, vgg16, mobilenetv3, efficientnet, convnext, clip, dinov2).
+- --**model**: The model type to use for feature extraction (vit, swin, resnet, vgg, mobilenet, efficientnet, convnext, clip, dinov2).
 - --**clustering_method**: The method to use for clustering, either kmeans, hdbscan or gmm.
 - --**use_feature_dict**: Use this flag if you want to use an existing feature dictionary instead of recalculating it.
 - --**reducer**: Dimensionality reduction method to be used (PCA, UMAP, default: None)
