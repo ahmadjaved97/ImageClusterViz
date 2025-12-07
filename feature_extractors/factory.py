@@ -34,6 +34,9 @@ def create_feature_extractor(model_type, variant=None, device='cpu', **kwargs):
     elif model_type == 'vgg':
         from .vgg import VGG16Extractor
         extractors['vgg'] = VGG16Extractor
+    elif model_type == 'convnext':
+        from .convnext import ConvNeXtExtractor
+        extractors['convnext'] = ConvNeXtExtractor
     else:
         raise ValueError(f"Unknown model type: {model_type}"
                         f" Supported types: vit, resnet, efficientnet, dinov2, .....")
