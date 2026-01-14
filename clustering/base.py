@@ -79,7 +79,7 @@ class ClusteringAlgorithm(ABC):
         Validate the input feature matrix.
         """
         if not isinstance(features, np.ndarray):
-            raise ValueError(f"Feature must be a numpy array, got {type{features}}")
+            raise ValueError(f"Feature must be a numpy array, got {type(features)}")
         
         if features.ndim != 2:
             raise ValueError(f"Features must be 2D array, got shape: {features.shape}")

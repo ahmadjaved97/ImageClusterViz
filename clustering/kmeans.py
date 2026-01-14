@@ -5,6 +5,7 @@ K-Means clustering implementation
 import numpy as np
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from .base import ClusteringAlgorithm, ClusteringResult
+from typing import Optional
 
 class KMeansClustering(ClusteringAlgorithm):
     """
@@ -45,9 +46,10 @@ class KMeansClustering(ClusteringAlgorithm):
 
         self._validate_features(features)
 
-        n_samples = features[0]
+        n_samples = features.shape[0]
 
         # Adjust n-clusters if needed.
+        print(self.n_clusters, n_samples)
         actual_n_clusters = min(self.n_clusters, n_samples)
 
         if actual_n_clusters < self.n_clusters:

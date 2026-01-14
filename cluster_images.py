@@ -4,63 +4,64 @@ import numpy as np
 from rich import print
 import cv2
 from rich.progress import track
-from sklearn.cluster import KMeans
-from sklearn.mixture import GaussianMixture
+# from sklearn.cluster import KMeans
+# from sklearn.mixture import GaussianMixture
 import shutil
 import argparse
 from utils import create_image_grid,read_dict, save_dict
 from feature_extractors.factory import create_feature_extractor
 from dimensionality_reduction import create_reducer
+from clustering.adapter import get_clustered_data
 
 
 
-def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans', feature_reduction=None):
-    """
-    Clusters the feature vectors from images into a specified number of clusters using either KMeans or Gaussian Mixture Models (GMM). 
-    It returns a dictionary mapping each cluster ID to a list of corresponding image filenames.
-    """
-    filenames = list(feature_dict.keys())
-    feature_vectors = list(feature_dict.values())
-    feature_vectors = np.array(feature_vectors)
-    num_feature_vectors = len(feature_vectors)
+# def get_clustered_data(feature_dict, num_clusters=5, clustering_method='kmeans', feature_reduction=None):
+#     """
+#     Clusters the feature vectors from images into a specified number of clusters using either KMeans or Gaussian Mixture Models (GMM). 
+#     It returns a dictionary mapping each cluster ID to a list of corresponding image filenames.
+#     """
+#     filenames = list(feature_dict.keys())
+#     feature_vectors = list(feature_dict.values())
+#     feature_vectors = np.array(feature_vectors)
+#     num_feature_vectors = len(feature_vectors)
 
-    if feature_reduction:
-        reduced_features = feature_reduction.fit_transform(feature_vectors)
-        # print(reduced_features.explained_variance_ratio_.cumsum()[:20])
-        feature_vectors = reduced_features
+#     if feature_reduction:
+#         reduced_features = feature_reduction.fit_transform(feature_vectors)
+#         # print(reduced_features.explained_variance_ratio_.cumsum()[:20])
+#         feature_vectors = reduced_features
 
 
-    if clustering_method == 'gmm':
-        gmm = GaussianMixture(n_components=num_clusters, random_state=42)
-        cluster_labels = gmm.fit_predict(feature_vectors)
+#     if clustering_method == 'gmm':
+#         gmm = GaussianMixture(n_components=num_clusters, random_state=42)
+#         cluster_labels = gmm.fit_predict(feature_vectors)
     
-    elif clustering_method == 'hdbscan':
-        import hdbscan
-        if num_feature_vectors < 2000:
-            min_cluster_size = 10
-            min_samples = 1
-        elif num_feature_vectors >= 2000 and num_feature_vectors < 10000:
-            min_cluster_size = 20
-            min_samples = 3
-        else:
-            min_cluster_size = 30
-            min_samples = 5
+#     elif clustering_method == 'hdbscan':
+#         import hdbscan
+#         if num_feature_vectors < 2000:
+#             min_cluster_size = 10
+#             min_samples = 1
+#         elif num_feature_vectors >= 2000 and num_feature_vectors < 10000:
+#             min_cluster_size = 20
+#             min_samples = 3
+#         else:
+#             min_cluster_size = 30
+#             min_samples = 5
 
-        hdbscan_clustering = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size,
-                                            min_samples=min_samples,
-                                            metric='euclidean')
-        cluster_labels = hdbscan_clustering.fit_predict(feature_vectors)
-    else:  # Default to KMeans
-        kmeans = KMeans(n_clusters=num_clusters, n_init=15, random_state=42)
-        cluster_labels = kmeans.fit_predict(feature_vectors)
+#         hdbscan_clustering = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size,
+#                                             min_samples=min_samples,
+#                                             metric='euclidean')
+#         cluster_labels = hdbscan_clustering.fit_predict(feature_vectors)
+#     else:  # Default to KMeans
+#         kmeans = KMeans(n_clusters=num_clusters, n_init=15, random_state=42)
+#         cluster_labels = kmeans.fit_predict(feature_vectors)
 
-    cluster_assignments = dict(zip(filenames, cluster_labels))
-    cluster_dict = {}
-    for file, cluster_id in cluster_assignments.items():
-        if cluster_id not in cluster_dict:
-            cluster_dict[cluster_id] = []
-        cluster_dict[cluster_id].append(file)
-    return cluster_dict
+#     cluster_assignments = dict(zip(filenames, cluster_labels))
+#     cluster_dict = {}
+#     for file, cluster_id in cluster_assignments.items():
+#         if cluster_id not in cluster_dict:
+#             cluster_dict[cluster_id] = []
+#         cluster_dict[cluster_id].append(file)
+#     return cluster_dict
 
 def create_cluster_folders(cluster_data, source_folder_path, output_folder):
     """
@@ -163,6 +164,7 @@ if __name__ == "__main__":
     
 
 
+    print("Start")
     if not args.use_feature_dict:
         # Delete existing feature dict if present
         if args.feature_dict_path and os.path.exists(os.path.join(args.feature_dict_path, "feature_dictionary.pkl")):
