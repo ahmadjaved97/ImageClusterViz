@@ -49,7 +49,6 @@ class KMeansClustering(ClusteringAlgorithm):
         n_samples = features.shape[0]
 
         # Adjust n-clusters if needed.
-        print(self.n_clusters, n_samples)
         actual_n_clusters = min(self.n_clusters, n_samples)
 
         if actual_n_clusters < self.n_clusters:

@@ -5,11 +5,15 @@ Factory function for creating clustering algorithms.
 
 from .base import ClusteringAlgorithm
 from .kmeans import KMeansClustering
+from .hdbscan_clustering import HDBSCANClustering
+from .gmm import GMMClustering
 
 
 # Registry of available clustering algorithms.
 CLUSTERING_ALGORITHMS = {
     'kmeans': KMeansClustering,
+    'hdbscan': HDBSCANClustering,
+    'gmm': GMMClustering,
 }
 
 def create_clustering_algorithm(
@@ -37,4 +41,3 @@ def get_available_algorithms():
     Get a list of available clustering algorithms.
     """
     return sorted(CLUSTERING_ALGORITHMS.keys())
-    
