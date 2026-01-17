@@ -98,7 +98,7 @@ class HDF5Cache(FeatureCache):
         for key, value in metadata.to_dict().items():
             if isinstance(value, (str, int, float, bool)):
                 f.attrs[key] = value
-            else isinstance(value, dict):
+            elif isinstance(value, dict):
                 f.attrs[key] = json.dumps(value)
         
         # Also save metadata as seperate JSON for easy access
@@ -241,7 +241,7 @@ class HDF5Cache(FeatureCache):
             info = {
                 'exists': True,
                 'n_samples': f['features'].shape[0],
-                'feature_dim': f['features'].shape[1]
+                'feature_dim': f['features'].shape[1],
                 'dtype': str(f['features'].dtype),
                 'compression': f['features'].compression,
                 'file_size_mb': Path(path).stat().st_size / (1024 * 1024)

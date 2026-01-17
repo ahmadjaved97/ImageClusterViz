@@ -75,7 +75,7 @@ class FeaturePipeline:
         recursive = True,
         save_every = None,
         save_path = None
-    ) -> FeaturePipeline:
+    ):
 
         """
         Extract features from all images in a directory.
@@ -108,7 +108,7 @@ class FeaturePipeline:
         file_paths,
         save_every=None,
         save_path=None
-    ) -> FeaturePipeline:
+    ):
 
         """
         Extract features from a list of filepaths.

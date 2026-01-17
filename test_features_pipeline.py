@@ -8,13 +8,13 @@ def create_test_images(output_dir, n_images=20):
     """Create test images for testing."""
     os.makedirs(output_dir, exist_ok=True)
 
-    for i in range(n_image):
+    for i in range(n_images):
         # Create random RGB image
         img_array = np.random.randint(0, 255, (224, 224, 3), dtype=np.uint8)
         img = Image.fromarray(img_array)
         img.save(os.path.join(output_dir, f'test_img_{i:03d}.jpg'))
     
-    printf(f"✓ Created {n_images} test images in {output_dir}")
+    print(f"✓ Created {n_images} test images in {output_dir}")
 
 def test_new_api():
     """
@@ -36,6 +36,7 @@ def test_new_api():
 
         # Create test images
         create_test_images(image_dir, n_images=20)
+        return True
     
     except Exception as e:
         print(f"\n TEST 1 FAILED: {str(e)}")
