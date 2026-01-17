@@ -36,6 +36,64 @@ def test_new_api():
 
         # Create test images
         create_test_images(image_dir, n_images=20)
+
+        # Create extractor
+        print("\n1. Creating extractor...")
+        extractor = create_feature_extractor('vit', variant='b_16', device='cpu')
+        print("   ✓ Extractor created")
+
+        # Create Pipeline
+        print("\n2. Creating pipeline...")
+        pipeline = FeaturePipeline(
+            extractor,
+            batch_size=4,
+            device='cpu',
+            verbose=True
+        )
+        print("   ✓ Pipeline created")
+
+        # Extract features
+        print("\n3. Extracting features...")
+        pipeline.extract_from_directory(image_dir)
+        print(f"   ✓ Features extracted")
+
+        # Check results
+        features = pipeline.get_features()
+        filenames = pipeline.get_filenames()
+        metadata = pipeline.get_metadata()
+
+        print("\n4.  Validation")
+        print(f"   ✓ Features shape: {features.shape}")
+        print(f"   ✓ Number of files: {len(filenames)}")
+        print(f"   ✓ Feature dimension: {metadata.feature_dim}")
+
+        assert features.shape[0] == 20, "Should have 20 samples"
+        assert len(filenames) == 20, "Should have 20 filenames"
+        assert features.shape[1] > 0, "Feature dimension should be > 0"
+
+        # Save cache
+        cache_path = os.path.join(cache_dir, 'test_features.h5')
+        pipeline.save(cache_path)
+        assert os.path.exists(cache_path), "Cache file should exist"
+        print(f"   ✓ Saved to {cache_path}")
+
+        # Load cache
+        print("\n6. Loading from HDF5...")
+        pipeline2 = FeaturePipeline(extractor, device='cpu', verbose=False)
+        pipeline2.load(cache_path)
+
+        loaded_features = pipeline2.get_features()
+        assert np.allclose(features, loaded_features), "Loaded features should match"
+        print(f"   ✓ Loaded successfully")
+
+        #Print metadata
+        print("\n7. Metadata.")
+        print(metadata.summary())
+
+        # Cleanup
+        shutil.rmtree(temp_dir)
+        print("\n TEST 1 PASSED!")
+
         return True
     
     except Exception as e:

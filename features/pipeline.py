@@ -170,7 +170,7 @@ class FeaturePipeline:
                 # Update progress bar
 
                 if self.verbose:
-                    progress_bar.set_postfilx({
+                    progress_bar.set_postfix({
                         'processed': self.n_processed,
                         'corrupted': self.n_corrupted
                     })
@@ -260,7 +260,7 @@ class FeaturePipeline:
         """
         if self.features is None:
             raise RuntimeError("No features available. Run extract_features_from_* or load() first.")
-        raise self.features
+        return self.features
     
     def get_filenames(self):
         """

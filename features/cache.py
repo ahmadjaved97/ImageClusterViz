@@ -90,16 +90,18 @@ class HDF5Cache(FeatureCache):
                 dtype=np.float32
             )
 
-        # Save filenames as variable-length strings
-        dt = h5py.string_dtype(encoding='utf-8')
-        f.create_dataset('filenames', data=filenames, dtype=dt)
+            # Save filenames as variable-length strings
+            dt = h5py.string_dtype(encoding='utf-8')
+            # Convert filenames to bytes for HDF5 compatibility
+            filenames_bytes = [fn.encode('utf-8') for fn in filenames]
+            f.create_dataset('filenames', data=filenames_bytes, dtype=h5py.special_dtype(vlen=bytes))
 
-        # Save metadata as attributes
-        for key, value in metadata.to_dict().items():
-            if isinstance(value, (str, int, float, bool)):
-                f.attrs[key] = value
-            elif isinstance(value, dict):
-                f.attrs[key] = json.dumps(value)
+            # Save metadata as attributes
+            for key, value in metadata.to_dict().items():
+                if isinstance(value, (str, int, float, bool)):
+                    f.attrs[key] = value
+                elif isinstance(value, dict):
+                    f.attrs[key] = json.dumps(value)
         
         # Also save metadata as seperate JSON for easy access
         metadata_path = path.replace('.h5', '_metadata.json')
@@ -123,8 +125,7 @@ class HDF5Cache(FeatureCache):
         
         with h5py.File(path, 'r') as f:
             # Load filenames
-            filenames = [s.decode('utf-8') if isinstance(s, bytes) else s
-                            for s in f['filenames'][:]]
+            filenames = [s.decode('utf-8') for s in f['filenames'][:]]
             
             # Load features
             if lazy:
@@ -138,7 +139,7 @@ class HDF5Cache(FeatureCache):
             
             # Load metadata from attributes
             metadata_dict = {}
-            for key, value in f.attr.items():
+            for key, value in f.attrs.items():
                 if isinstance(value, str) and value.startswith('{'):
                     # Try to parse as JSON
                     try:
