@@ -86,7 +86,7 @@ class HDF5Cache(FeatureCache):
                 'features',
                 data=features,
                 compression=self.compression,
-                compression_opts=self.compression_level if self.compression == 'gzip' else None
+                compression_opts=self.compression_level if self.compression == 'gzip' else None,
                 dtype=np.float32
             )
 

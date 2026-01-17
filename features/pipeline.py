@@ -289,7 +289,7 @@ class FeaturePipeline:
     
     def _get_model_info(self):
         """
-        Get information about the featuare extractor.
+        Get information about the feature extractor.
         """
 
         info = {
