@@ -55,26 +55,44 @@ class BatchProcessor:
 
         if not images:
             return np.array([])
+
+        try:
+            # Check if extractor support batch processing.
+            if hasattr(extractor, 'extract_batch'):
+                features = extractor.extract_batch(images)
+            else:
+                # Fall back to loop.
+                warnings.warn(
+                    f"Extractor {type(extractor).__name__} doesn't support extract_batch()."
+                    "Using slower one-by-one processing. Consider updating the extractor.",
+                    UserWarning
+                    )
+                
+                features_list = []
+                for image in images:
+                    feature = extractor.extract_features(image)
+                    features_list.append(feature)
+                features = np.vstack(features_list)
         
-        features_list = []
-
-        for image in images:
-            try:
-                feature = extractor.extract_features(image)
-                features_list.append(feature)
-            except Exception as e:
-                warnings.warn(f"Failed to extract features: {str(e)}")
-
-                # Use zero vector as a placeholder for failed extraction
-                if features_list:
-                    feature_dim = features_list[0].shape[0]
-                    features_list.append(np.zeros(feature_dim))
-                else:
-                    # Can't determine feature dim
-                    pass
-            
-        # Stack into batch
-        features = np.vstack(features_list)
+        except Exception as e:
+            warnings.warn(f"Failed to extract features : {str(e)}")
+            # Try fallback method
+            features_list = []
+            for image in images:
+                try:
+                    feature = extractor.extract_features(image)
+                    features_list.append(feature)
+                except Exception as e:
+                    # Use zero vector as a placeholder for failed extraction
+                    if features_list:
+                        feature_dim = features_list[0].shape[0]
+                        features_list.append(np.zeros(feature_dim))
+                    else:
+                        # Can't determine feature dim
+                        raise
+                
+            # Stack into batch
+            features = np.vstack(features_list)
 
         # Clear GPU cache if needed
         if self.clear_cache and 'cuda' in self.device:
