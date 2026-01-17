@@ -241,6 +241,75 @@ class FeaturePipeline:
         if self.verbose:
             print(f"Features saved to: {path}")
     
+    def load(self, path):
+        """
+        Load features from disk.
+        """
+
+        self.features, self.filenames, self.metadata = self.cache.load(path)
+
+        if self.verbose:
+            print(f"Loaded features from: {path}")
+            print(self.metadata.summary())
+        
+        return self
+    
+    def get_features(self):
+        """
+        Get extracted features as numpy array.
+        """
+        if self.features is None:
+            raise RuntimeError("No features available. Run extract_features_from_* or load() first.")
+        raise self.features
+    
+    def get_filenames(self):
+        """
+        Get list of filenames corresponding to features.
+        """
+        return self.filenames
+    
+    def get_feature_dict(self):
+        """
+        Get features as dictionary
+        """
+
+        if self.features is None:
+            raise RuntimeError("No features available. run extract_from_* or load() first.")
+        
+        return {fn: feat for fn, feat in zip(self.filenames, self.features)}
+    
+    def get_metadata(self):
+        """
+        Get feature metadata.
+        """
+        if self.metadata is None:
+            raise RuntimeError("No metadata available. Run extract_from_* or load() first.")
+        
+        return self.metadata
+    
+    def _get_model_info(self):
+        """
+        Get information about the featuare extractor.
+        """
+
+        info = {
+            'model_type': 'unknown',
+            'variant': None
+        }
+
+        # Try to get model type from extractor
+        if hasattr(self.extractor, 'get_algorithm_name'):
+            info['model_type'] = self.extractor.get_algorithm_name()
+        elif hasattr(self.extractor, '__class__'):
+            info['model_type'] = self.extractor.__class__.__name__.replace('Extractor', '').lower()
+        
+
+        # Try to get variant
+        if hasattr(self.extractor, 'variant'):
+            info['variant'] = self.extractor.variant
+        
+        return info
+    
     def _save_checkpoint(
         self,
         feature_list,
