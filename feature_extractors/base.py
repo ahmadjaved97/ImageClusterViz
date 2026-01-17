@@ -33,6 +33,24 @@ class FeatureExtractor(ABC):
         
         return features.cpu().numpy()
     
+    def extract_batch(self, images):
+        """
+        Extract features from a batch of images.
+        """
+
+        if self.model is None or self.preprocess is None:
+            raise RuntimeError("Model not loaded. Call load_model() first.")
+        
+        # Preprocess all images into a batch
+        batch_tensors = torch.stack([self.preprocess(img) for img in images])
+        batch_tensors = batch_tensors.to(self.device)
+
+        # Single forward pass for entire batch
+        with torch.no_grad():
+            features = self._forward(batch_tensors)
+        
+        return features.cpu().numpy()
+    
     @abstractmethod
     def _forward(self, image_tensor):
         """ Model specific forward pass."""
