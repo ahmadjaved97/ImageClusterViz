@@ -59,7 +59,7 @@ class TSNEReducer(DimensionalityReducer):
             n_components=self.n_components,
             perpelxity=self.perpelxity,
             learning_rate=self.learning_rate,
-            n_iter=self.n_iter,
+            max_iter=self.n_iter,
             metric=self.metric,
             random_state=self.random_state,
             n_jobs=self.n_jobs,
@@ -84,6 +84,11 @@ class TSNEReducer(DimensionalityReducer):
         Fit the t-SNE and return the embedded features.
         """
 
+        self._validate_features(features)
+        
+        self.original_dim = features.shape[1]
+        n_samples = features.shape[0]
+
         # Adjust perplexity if needed
         max_perplexity = (n_samples - 1) / 3
         if self.perpelxity > max_perplexity:
@@ -98,9 +103,9 @@ class TSNEReducer(DimensionalityReducer):
         # Create t-SNE model
         self.model = TSNE(
             n_components=self.n_components,
-            perpelxity=self.perpelxity,
+            perplexity=perpelxity,
             learning_rate=self.learning_rate,
-            n_iter=self.n_iter,
+            max_iter=self.n_iter,
             metric=self.metric,
             random_state=self.random_state,
             n_jobs=self.n_jobs,
