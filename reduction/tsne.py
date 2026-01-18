@@ -4,7 +4,7 @@ t-SNE dimensionality reduction.
 
 import numpy as np
 from typing import Optional
-from sklearn.maniffold import TSNE
+from sklearn.manifold import TSNE
 from .base import DimensionalityReducer
 
 
@@ -164,5 +164,5 @@ class TSNEReducer(DimensionalityReducer):
             'n_jobs': self.n_jobs
         }
     
-    
+
 

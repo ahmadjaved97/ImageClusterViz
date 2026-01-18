@@ -5,7 +5,7 @@ Factory function for creating dimensionality reduction algorithms.
 from typing import List, Type, Dict
 from .base import DimensionalityReducer
 from .pca import PCAReducer
-from .umap import UMAPReducer
+from .umap_reducer import UMAPReducer
 from .tsne import TSNEReducer
 
 
@@ -42,7 +42,7 @@ def get_available_reducers():
     """
     unique = set(REDUCTION_ALGORITHMS.values())
     names = []
-    for names, cls in REDUCTION_ALGORITHMS.items():
+    for name, cls in REDUCTION_ALGORITHMS.items():
         if cls in unique:
             names.append(name)
             unique.remove(cls)
