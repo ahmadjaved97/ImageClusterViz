@@ -124,12 +124,135 @@ class ClusteringResult:
         """
         return f"ClusteringResults(n_samples={len(self.filenames)}, n_clusters={self.n_clusters})"
     
-    
+
 
     
 
 
 
 class ExportManager:
-    pass
+    """
+    Manages exporting clustering results to various formats.
+    
+    Handles CSV, JSON, Excel, DataFrame exports with optional features.
+    """
+
+    def __init__(self, results):
+        """
+        Initialize export manager.
+        """
+        self.results = results
+    
+    def to_dict(self, include_features=False):
+        """
+        Convert result to dictionary format.
+        """
+        data = {
+            'n_samples': len(self.results.filenames),
+            'n_clusters': self.results.n_clusters,
+            'cluster_sizes': self.results.get_cluster_size(),
+            'clusters': {},
+            'metadata': self.results.metadata
+        }
+
+        # Add cluster assignments.
+        for cluster_id, files in self.results.cluster_dict.items():
+            data['clusters'][str(cluster_id)] = files
+        
+        # Add features if requested.
+        if include_features:
+            if self.results.features is not None:
+                data['features'] = {
+                    fn: self.results.features[i].tolist()
+                    for i, fn in enumerate(self,results.filenames)
+                }
+            
+            if self.results.reduced_features is not None:
+                data['reduced_features'] = {
+                    fn: self.results.reduced_features[i].tolist()
+                    for i, fn in enumerate(self.results.filenames)
+                }
+        
+        return data
+    
+    def to_dataframe(self, include_features=False):
+        """
+        Convert results to pandas dataframe.
+        """
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError("pandas is required for DataFrame support. Install with: pip install pandas")
+        
+        # Create base dataframe
+        data = {
+            'filename': self.results.filenames,
+            'cluster_id': self.results.cluster_labels
+        }
+
+        df = pd.DataFrame(data)
+
+        # Add features if requested.
+        if include_features and self.results.features is not None:
+            # Add features as seperate column
+            n_features = self.results.features.shape[1]
+            for i in range(n_features):
+                df[f'feature_{i}'] = self.results.features[:, i]
+        
+        if include_features and self.results.reduced_features is not None:
+            # Add reduced features
+            n_features = self.results.reduced_features.shape[1]
+            for i in range(n_features):
+                df[f'reduced_features_{i}'] = self.results.reduced_features[:, i]
+        
+        return df
+    
+    def to_csv(self, path, include_features=False):
+        """
+        Export results to CSV format.
+        """
+
+        df = self.to_dataframe(include_features=include_features)
+
+        # Create directory if needed
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+        df.to_csv(path, index=False)
+        print(f"Results exported as CSV: {path}")
+    
+    def to_json(self, path, include_features=False):
+        """
+        Export reuslts to JSON file.
+        """
+        data = self.to_dict(include_features=include_features)
+
+        # Create directory if needed
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        print(f"Results exported to JSON: {path}")
+    
+    def to_excel(self, path, include_features=False):
+        """
+        Export results to excel file.
+        """
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError("pandas is required for Excel export. Install with: pip install pandas openpyxl")
+        
+        df = self.to_dataframe(include_features=include_features)
+
+        # Create directory if needed
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+
+        # Export to excel
+        try:
+            df.to_excel(path, index=False, engine='openpyxl')
+            print(f"Results exported to Excel: {path}")
+        except ImportError:
+            raise ImportError("openpyxl is required for Excel support. Install with: pip install openpyxl")
+
 
