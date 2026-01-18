@@ -6,11 +6,16 @@ from typing import List, Type, Dict
 from .base import DimensionalityReducer
 from .pca import PCAReducer
 from .umap import UMAPReducer
+from .tsne import TSNEReducer
+
 
 # Registry of available reduction algorithms.
 REDUCTION_ALGORITHMS = {
     'pca': PCAReducer,
     'umap': UMAPReducer,
+    'tsne': TSNEReducer,
+    't-sne': TSNEReducer,
+
 }
 
 def create_reducer(algorithm, **kwargs):
