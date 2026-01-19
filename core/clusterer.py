@@ -4,8 +4,10 @@ from pathlib import Path
 
 from features import FeaturePipeline
 from feature_extractors import create_feature_extractor
-from clustering import create_clustering_algorithm
-from reduction import create_reducer
+from clustering.factory import create_clustering_algorithm
+from reduction.factory import create_reducer
+from .results import ClusteringResults
+
 
 class ImageClusterer:
     """
@@ -242,7 +244,7 @@ class ImageClusterer:
             'clustering_method': self.clustering_method,
             'n_clusters': clustering_result.n_clusters,
             'reducer': self.reducer,
-            'n_components': self.n_components if self.reducer else None
+            'n_components': self.n_components if self.reducer else None,
             'device': self.device,
             'batch_size': self.batch_size
         }
@@ -265,7 +267,7 @@ class ImageClusterer:
         self.is_fitted_ = True
 
         if self.verbose:
-            print("\n" + "=*60")
+            print("\n" + "="*60)
             print("CLUSTERING COMPLETE")
             print("="*60)
             print(f"\n{self.results_.summary()}")

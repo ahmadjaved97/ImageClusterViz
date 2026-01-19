@@ -9,7 +9,7 @@ from pathlib import Path
 import warnings
 
 
-class ClusteringResult:
+class ClusteringResults:
     """
     Container for clustering results with analysis and export methods.
     """
@@ -38,10 +38,10 @@ class ClusteringResult:
 
 
         # Initialize Export manager.
-        self._exporter = ExportManager(self):
+        self._exporter = ExportManager(self)
 
     
-    def get_cluster_size(self):
+    def get_cluster_sizes(self):
         """
         Get the size of each cluster.
         """
@@ -57,7 +57,7 @@ class ClusteringResult:
         """
         Get outlier filenames.
         """
-        return cluster_dict.get(-1, None)
+        return self.cluster_dict.get(-1, None)
     
     def summary(self):
         """
@@ -67,7 +67,7 @@ class ClusteringResult:
             "Clustering results summary: "
             f"   Total Images: {len(self.filenames)}",
             f"   Number of clusters: {self.n_clusters}",
-            f"   Cluster sizes: {self.get_cluster_size()}"
+            f"   Cluster sizes: {self.get_cluster_sizes()}"
         ]
 
         outliers = self.get_outliers()
