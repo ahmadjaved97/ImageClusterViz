@@ -38,7 +38,7 @@ class ImageClusterer:
         self.reducer = reducer
         self.n_components = n_components
         self.batch_size = batch_size
-        self.device = device
+        self.device = self._validate_device(device)
         self.random_state = random_state
         self.verbose = verbose
 
@@ -63,7 +63,7 @@ class ImageClusterer:
             import torch
             return 'cuda' if torch.cuda.is_available() else 'cpu'
         
-        return device
+        return 'cpu'
     
     def _get_extractor(self):
         """

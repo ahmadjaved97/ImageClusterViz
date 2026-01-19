@@ -81,6 +81,62 @@ def test_basic_clustering():
         return False
 
 
+def test_export_csv():
+    """Test CSV export."""
+    print("\n" + "="*60)
+    print("TEST 2: CSV Export")
+    print("="*60)
+    
+    try:
+        from core import ImageClusterer
+        
+        # Create temp directory
+        temp_dir = tempfile.mkdtemp()
+        image_dir = os.path.join(temp_dir, 'images')
+        output_dir = os.path.join(temp_dir, 'output')
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Create test images
+        create_test_images(image_dir, n_images=20)
+        
+        # Cluster
+        print("\n1. Clustering...")
+        clusterer = ImageClusterer(model='vit', n_clusters=3, batch_size=4, verbose=False)
+        results = clusterer.fit(image_dir)
+        
+        # Export CSV
+        print("\n2. Exporting to CSV...")
+        csv_path = os.path.join(output_dir, 'clusters.csv')
+        results.to_csv(csv_path)
+        
+        # Verify CSV exists
+        assert os.path.exists(csv_path)
+        print(f"   ✓ CSV created: {csv_path}")
+        
+        # Read and check CSV
+        import csv
+        with open(csv_path, 'r') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            assert len(rows) == 20
+            assert 'filename' in rows[0]
+            assert 'cluster_id' in rows[0]
+        print(f"   CSV has correct structure")
+        
+        # Cleanup
+        shutil.rmtree(temp_dir)
+        
+        print("\n TEST 2 PASSED")
+        return True
+        
+    except Exception as e:
+        print(f"\n TEST 2 FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
+
 def run_all_tests():
     """Run all tests."""
     print("="*60)
@@ -90,6 +146,7 @@ def run_all_tests():
     results = []
     
     results.append(("Basic Clustering", test_basic_clustering()))
+    results.append(("CSV Export", test_export_csv()))
 
 
     # Summary
