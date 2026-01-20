@@ -7,7 +7,7 @@ import json
 import numpy as np
 from pathlib import Path
 import warnings
-
+from typing import Optional, Dict
 
 class ClusteringResults:
     """
@@ -118,6 +118,110 @@ class ClusteringResults:
         """
         self._exporter.to_excel(path, include_features=include_features)
     
+    def create_grids(
+        self,
+        image_dir: str,
+        output_dir: str,
+        image_size: tuple = (300, 300),
+        verbose: bool = True
+    ) -> Dict[int, str]:
+        """
+        Create grid visualizations for all clusters.
+        
+        Args:
+            image_dir: Directory containing the original images
+            output_dir: Directory to save grid images
+            image_size: Size to resize each image to (width, height)
+            verbose: Whether to show progress
+        
+        Returns:
+            Dictionary mapping cluster_id to grid image path
+        
+        Example:
+            >>> results = clusterer.fit('./images')
+            >>> grid_paths = results.create_grids('./images', './grids')
+            >>> print(grid_paths)
+            {0: './grids/cluster_0.jpg', 1: './grids/cluster_1.jpg', ...}
+        """
+        from visualization import create_cluster_grids
+        
+        return create_cluster_grids(
+            cluster_dict=self.cluster_dict,
+            image_dir=image_dir,
+            output_dir=output_dir,
+            image_size=image_size,
+            verbose=verbose
+        )
+    
+    def create_cluster_folders(
+        self,
+        image_dir: str,
+        output_dir: str,
+        copy_images: bool = True,
+        verbose: bool = True
+    ) -> Dict[int, str]:
+        """
+        Organize images into cluster folders.
+        
+        Creates a folder for each cluster and copies/moves images into them.
+        
+        Args:
+            image_dir: Directory containing the original images
+            output_dir: Directory to create cluster folders in
+            copy_images: If True, copy images; if False, move images
+            verbose: Whether to show progress
+        
+        Returns:
+            Dictionary mapping cluster_id to folder path
+        
+        Example:
+            >>> results = clusterer.fit('./images')
+            >>> folders = results.create_cluster_folders('./images', './clusters')
+            >>> print(folders)
+            {0: './clusters/cluster_0', 1: './clusters/cluster_1', ...}
+        """
+        import shutil
+        from tqdm import tqdm
+        
+        # Create output directory
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+        
+        cluster_folders = {}
+        
+        # Progress bar
+        iterator = self.cluster_dict.items()
+        if verbose:
+            iterator = tqdm(iterator, desc="Creating cluster folders", unit="cluster")
+        
+        for cluster_id, filenames in iterator:
+            # Create cluster folder
+            cluster_folder = os.path.join(output_dir, f'cluster_{cluster_id}')
+            Path(cluster_folder).mkdir(parents=True, exist_ok=True)
+            cluster_folders[cluster_id] = cluster_folder
+            
+            # Copy/move images
+            for filename in filenames:
+                #Extract basename
+                basename = os.path.basename(filename)
+                source_path = os.path.join(image_dir, basename)
+                dest_path = os.path.join(cluster_folder, basename)
+                
+                try:
+                    if copy_images:
+                        shutil.copy2(source_path, dest_path)
+                    else:
+                        shutil.move(source_path, dest_path)
+                except Exception as e:
+                    if verbose:
+                        print(f"Warning: Failed to {'copy' if copy_images else 'move'} {filename}: {e}")
+        
+        if verbose:
+            action = "copied" if copy_images else "moved"
+            print(f"\n✓ Images {action} to {len(cluster_folders)} cluster folders in {output_dir}")
+        
+        return cluster_folders
+    
+
     def __repr__(self):
         """
         String representation.
