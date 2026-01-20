@@ -7,7 +7,7 @@ import json
 import numpy as np
 from pathlib import Path
 import warnings
-
+from typing import Optional, Dict
 
 class ClusteringResults:
     """
@@ -201,8 +201,10 @@ class ClusteringResults:
             
             # Copy/move images
             for filename in filenames:
-                source_path = os.path.join(image_dir, filename)
-                dest_path = os.path.join(cluster_folder, filename)
+                #Extract basename
+                basename = os.path.basename(filename)
+                source_path = os.path.join(image_dir, basename)
+                dest_path = os.path.join(cluster_folder, basename)
                 
                 try:
                     if copy_images:

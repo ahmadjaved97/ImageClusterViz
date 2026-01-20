@@ -35,7 +35,7 @@ class GridVisualizer:
         self,
         image_list,
         num_rows=None,
-        num_columns=None
+        num_cols=None
     ):
         """
         Create a grid from a list of images.
