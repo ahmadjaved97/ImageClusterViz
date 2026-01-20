@@ -63,7 +63,7 @@ class ImageClusterer:
             import torch
             return 'cuda' if torch.cuda.is_available() else 'cpu'
         
-        return 'cpu'
+        return device
     
     def _get_extractor(self):
         """
@@ -72,7 +72,6 @@ class ImageClusterer:
         if self._extractor is None:
             if self.verbose:
                 print(f"Creating feature extractor: {self.model}")
-            
             self._extractor = create_feature_extractor(
                 model_type=self.model,
                 variant=self.model_variant,
