@@ -91,7 +91,7 @@ class KMeansClustering(ClusteringAlgorithm):
             'algorithm': 'kmeans',
             'inertia': float(self._model.inertia_),
             'n_iter': int(self._model.n_iter_),
-            'cluster_centers': self._model.cluster_centers_,
+            'cluster_centers': self._model.cluster_centers_.tolist(),
             'used_minibatch': use_minibatch,
         }
 
