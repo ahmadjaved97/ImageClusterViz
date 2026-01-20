@@ -150,7 +150,7 @@ class ExportManager:
         data = {
             'n_samples': len(self.results.filenames),
             'n_clusters': self.results.n_clusters,
-            'cluster_sizes': self.results.get_cluster_size(),
+            'cluster_sizes': self.results.get_cluster_sizes(),
             'clusters': {},
             'metadata': self.results.metadata
         }

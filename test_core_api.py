@@ -7,6 +7,7 @@ import tempfile
 import shutil
 import numpy as np
 from PIL import Image
+from rich import print
 
 def create_test_images(output_dir, n_images=50):
     """
@@ -135,7 +136,182 @@ def test_export_csv():
         traceback.print_exc()
         return False
 
+def test_with_reduction():
+    """Test clustering with dimensionality reduction."""
+    print("\n" + "="*60)
+    print("TEST 4: With Dimensionality Reduction")
+    print("="*60)
+    
+    try:
+        from core import ImageClusterer
+        
+        # Create temp directory
+        temp_dir = tempfile.mkdtemp()
+        image_dir = os.path.join(temp_dir, 'images')
+        
+        # Create test images
+        create_test_images(image_dir, n_images=35)
+        
+        # Cluster with PCA
+        print("\n1. Clustering with PCA...")
+        clusterer = ImageClusterer(
+            model='vit',
+            reducer='pca',
+            n_components=32,
+            n_clusters=3,
+            batch_size=4,
+            verbose=False
+        )
+        results = clusterer.fit(image_dir)
+        
+        print(f"    Clustered with PCA")
+        assert results.reduced_features is not None
+        assert results.reduced_features.shape[1] == 32
+        print(f"    Reduced to {results.reduced_features.shape[1]} dimensions")
+        
+        # Cleanup
+        shutil.rmtree(temp_dir)
+        
+        print("\n TEST 4 PASSED")
+        return True
+        
+    except Exception as e:
+        print(f"\n TEST 4 FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
+def test_fit_features():
+    """Test fitting with pre-computed features."""
+    print("\n" + "="*60)
+    print("TEST 5: Fit Pre-computed Features")
+    print("="*60)
+    
+    try:
+        from core import ImageClusterer
+        
+        # Create fake features
+        print("\n1. Creating fake features...")
+        features = np.random.randn(50, 128)
+        filenames = [f'img_{i:03d}.jpg' for i in range(50)]
+        
+        # Cluster
+        print("\n2. Clustering features...")
+        clusterer = ImageClusterer(
+            clustering_method='kmeans',
+            n_clusters=5,
+            verbose=False
+        )
+        results = clusterer.fit_features(features, filenames)
+        
+        print(f"    Clustered {len(filenames)} samples")
+        print(f"    Found {results.n_clusters} clusters")
+        assert results.n_clusters == 5
+        assert len(results.filenames) == 50
+        
+        print("\n TEST 5 PASSED")
+        return True
+        
+    except Exception as e:
+        print(f"\n TEST 5 FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def test_dataframe_export():
+    """Test DataFrame export."""
+    print("\n" + "="*60)
+    print("TEST 6: DataFrame Export")
+    print("="*60)
+    
+    try:
+        from core import ImageClusterer
+        
+        # Create fake features
+        features = np.random.randn(30, 64)
+        filenames = [f'img_{i:03d}.jpg' for i in range(30)]
+        
+        # Cluster
+        print("\n1. Clustering...")
+        clusterer = ImageClusterer(n_clusters=3, verbose=False)
+        results = clusterer.fit_features(features, filenames)
+        
+        # Export to DataFrame
+        print("\n2. Converting to DataFrame...")
+        df = results.to_dataframe()
+        
+        print(f"   ✓ DataFrame shape: {df.shape}")
+        assert df.shape[0] == 30
+        assert 'filename' in df.columns
+        assert 'cluster_id' in df.columns
+        print(f"   ✓ Has correct columns: {list(df.columns)}")
+        
+        print("\n TEST 6 PASSED")
+        return True
+        
+    except ImportError:
+        print("\n  TEST 6 SKIPPED: pandas not installed")
+        return True
+    except Exception as e:
+        print(f"\n TEST 6 FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def test_export_json():
+    """Test JSON export."""
+    print("\n" + "="*60)
+    print("TEST 3: JSON Export")
+    print("="*60)
+    
+    try:
+        from core import ImageClusterer
+        import json
+        
+        # Create temp directory
+        temp_dir = tempfile.mkdtemp()
+        image_dir = os.path.join(temp_dir, 'images')
+        output_dir = os.path.join(temp_dir, 'output')
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Create test images
+        create_test_images(image_dir, n_images=20)
+        
+        # Cluster
+        print("\n1. Clustering...")
+        clusterer = ImageClusterer(model='vit', n_clusters=3, batch_size=4, verbose=False)
+        results = clusterer.fit(image_dir)
+        
+        # Export JSON
+        print("\n2. Exporting to JSON...")
+        json_path = os.path.join(output_dir, 'clusters.json')
+        results.to_json(json_path)
+        
+        # Verify JSON exists
+        assert os.path.exists(json_path)
+        print(f"    JSON created: {json_path}")
+        
+        # Read and check JSON
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+            assert 'n_samples' in data
+            assert 'n_clusters' in data
+            assert 'clusters' in data
+            assert data['n_samples'] == 20
+            assert data['n_clusters'] == 3
+        print(f"    JSON has correct structure")
+        
+        # Cleanup
+        shutil.rmtree(temp_dir)
+        
+        print("\n TEST 3 PASSED")
+        return True
+        
+    except Exception as e:
+        print(f"\n TEST 3 FAILED: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 def run_all_tests():
     """Run all tests."""
@@ -147,6 +323,10 @@ def run_all_tests():
     
     results.append(("Basic Clustering", test_basic_clustering()))
     results.append(("CSV Export", test_export_csv()))
+    results.append(("With Reduction", test_with_reduction()))
+    results.append(("Fit Features", test_fit_features()))
+    results.append(("DataFrame Export", test_dataframe_export()))
+    results.append(("JSON Export", test_export_json()))
 
 
     # Summary
@@ -164,8 +344,6 @@ def run_all_tests():
     if all_passed:
         print("✅ ALL TESTS PASSED!")
         print("="*60)
-        print("\nThe core API is working correctly.")
-        print("You can now use ImageClusterer in your projects!")
     else:
         print("❌ SOME TESTS FAILED!")
         print("="*60)
