@@ -3,7 +3,7 @@ Complete workflow example.
 """
 
 
-from core import ImageClusterer
+from imageatlas import ImageClusterer
 
 def main():
     """
@@ -19,7 +19,7 @@ def main():
     print("-" * 70)
 
     # Paths
-    image_dir = './input_data'
+    image_dir = '/home/s63ajave/datasets/temp_ds'
     output_base = './output'
 
     # Output subdirectories
