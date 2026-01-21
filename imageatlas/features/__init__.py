@@ -16,5 +16,3 @@ __all__ = [
     'HDF5Cache',
     'FeaturePipeline',
 ]
-
-__version__ = "1.0.0"

@@ -13,5 +13,3 @@ __all__ = [
     'ClusteringResults',
     'ExportManager',
 ]
-
-__version__ = '1.0.0'

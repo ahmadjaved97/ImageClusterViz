@@ -8,5 +8,3 @@ __all__ = [
     'GridVisualizer',
     'create_cluster_grids',
 ]
-
-__version__ = '1.0.0'
