@@ -16,7 +16,7 @@ class TSNEReducer(DimensionalityReducer):
     def __init__(
         self,
         n_components=2,
-        perpelxity=30.0,
+        perplexity=30.0,
         learning_rate=200.0,
         n_iter=1000,
         metric='euclidean',
@@ -25,7 +25,7 @@ class TSNEReducer(DimensionalityReducer):
         **kwargs
     ):
         super().__init__(n_components=n_components, random_state=random_state, **kwargs)
-        self.perpelxity=perpelxity
+        self.perplexity=perplexity
         self.learning_rate=learning_rate
         self.n_iter = n_iter
         self.metric = metric
@@ -45,19 +45,19 @@ class TSNEReducer(DimensionalityReducer):
 
         # Adjust perplexity if needed
         max_perplexity = (n_samples - 1) / 3
-        if self.perpelxity > max_perplexity:
+        if self.perplexity > max_perplexity:
             adjusted_perplexity = max(5, max_perplexity)
             print(f"Warning: perplexity adjusted to {adjusted_perplexity:.1f} "
                 f"(must be < n_samples / 3)")
             perplexity = adjusted_perplexity
         else:
-            perpelxity = self.perpelxity
+            perplexity = self.perplexity
         
 
         # Create t-SNE model
         self.model = TSNE(
             n_components=self.n_components,
-            perpelxity=self.perpelxity,
+            perplexity=self.perplexity,
             learning_rate=self.learning_rate,
             max_iter=self.n_iter,
             metric=self.metric,
@@ -91,19 +91,19 @@ class TSNEReducer(DimensionalityReducer):
 
         # Adjust perplexity if needed
         max_perplexity = (n_samples - 1) / 3
-        if self.perpelxity > max_perplexity:
+        if self.perplexity > max_perplexity:
             adjusted_perplexity = max(5, max_perplexity)
             print(f"Warning: perplexity adjusted to {adjusted_perplexity:.1f} "
                 f"(must be < n_samples / 3)")
             perplexity = adjusted_perplexity
         else:
-            perpelxity = self.perpelxity
+            perplexity = self.perplexity
         
 
         # Create t-SNE model
         self.model = TSNE(
             n_components=self.n_components,
-            perplexity=perpelxity,
+            perplexity=perplexity,
             learning_rate=self.learning_rate,
             max_iter=self.n_iter,
             metric=self.metric,
@@ -137,7 +137,7 @@ class TSNEReducer(DimensionalityReducer):
         metadata = {
             'algorithm': 'tsne',
             'n_components': int(self.reduced_dim),
-            'perplexity': float(self.perpelxity),
+            'perplexity': float(self.perplexity),
             'learning_rate': float(self.learning_rate),
             'n_iter': int(self.n_iter),
             'metric': self.metric
@@ -161,7 +161,7 @@ class TSNEReducer(DimensionalityReducer):
 
         return {
             'n_components': self.n_components,
-            'perplexity': self.perpelxity,
+            'perplexity': self.perplexity,
             'learning_rate': self.learning_rate,
             'n_iter': self.n_iter,
             'metric': self.metric,
