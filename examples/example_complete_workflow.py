@@ -19,7 +19,7 @@ def main():
     print("-" * 70)
 
     # Paths
-    image_dir = '/home/s63ajave/datasets/temp_ds'
+    image_dir = './input_data'
     output_base = './output'
 
     # Output subdirectories
