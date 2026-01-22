@@ -53,14 +53,11 @@ Changelog = "https://github.com/ahmadjaved97/imageatlas/blob/main/CHANGELOG.md"
 
 
 [project.optional-dependencies]
-clip = [
-    "clip @ git+https://github.com/openai/CLIP.git"
-]
+
 full = [
     "umap-learn",
     "hdbscan",
     "openpyxl",
-    "clip @ git+https://github.com/openai/CLIP.git"
 ]
 
 [tool.setuptools]
