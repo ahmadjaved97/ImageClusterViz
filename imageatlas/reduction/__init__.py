@@ -18,5 +18,3 @@ _all__ = [
     'create_reducer',
     'get_available_reducers'
 ]
-
-__version__ = '1.0.0'

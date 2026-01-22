@@ -2,10 +2,10 @@ import os
 import numpy as np
 from pathlib import Path
 
-from features import FeaturePipeline
-from feature_extractors import create_feature_extractor
-from clustering.factory import create_clustering_algorithm
-from reduction.factory import create_reducer
+from ..features import FeaturePipeline
+from ..features.extractors import create_feature_extractor
+from ..clustering.factory import create_clustering_algorithm
+from ..reduction.factory import create_reducer
 from .results import ClusteringResults
 
 

@@ -1,3 +1,8 @@
 __pycache__
 *.pkl
 *.pickle
+*.egg-info/
+*.py[cod]
+.venv/
+venv/
+*/output/

@@ -143,7 +143,7 @@ class ClusteringResults:
             >>> print(grid_paths)
             {0: './grids/cluster_0.jpg', 1: './grids/cluster_1.jpg', ...}
         """
-        from visualization import create_cluster_grids
+        from ..visualization import create_cluster_grids
         
         return create_cluster_grids(
             cluster_dict=self.cluster_dict,

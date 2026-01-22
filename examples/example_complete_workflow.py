@@ -3,7 +3,7 @@ Complete workflow example.
 """
 
 
-from core import ImageClusterer
+from imageatlas import ImageClusterer
 
 def main():
     """
@@ -153,12 +153,6 @@ def main():
     print(f"  3. CSV export:      {output_base}/clusters.csv")
     print(f"  4. JSON export:     {output_base}/clusters.json")
     print(f"  5. Feature cache:   {output_base}/features_cache.h5")
-    
-    print(f"\nYou can now:")
-    print(f"  - View cluster grids in {grids_dir}/")
-    print(f"  - Browse organized images in {clusters_dir}/")
-    print(f"  - Analyze results in {output_base}/clusters.csv")
-    print(f"  - Re-run faster using cached features")
     
     return results
 

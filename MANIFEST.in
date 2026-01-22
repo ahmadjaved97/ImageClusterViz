@@ -1,0 +1,62 @@
+# MANIFEST.in - Specifies additional files to include in the distribution
+
+# Include important documentation files
+include README.md
+include LICENSE
+include CONTRIBUTING.md
+include CHANGELOG.md
+include requirements.txt
+include pyproject.toml
+
+# Include all Python files in the package
+recursive-include imageatlas *.py
+
+# Include type hints marker
+include imageatlas/py.typed
+
+# Include test files
+recursive-include tests *.py
+
+# Include example files
+recursive-include examples *.py
+recursive-include examples *.ipynb
+
+# Exclude compiled Python files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
+global-exclude .DS_Store
+
+# Exclude cache and build artifacts
+global-exclude *.egg-info
+global-exclude .pytest_cache
+global-exclude .tox
+global-exclude .coverage
+global-exclude htmlcov
+
+# Exclude version control files
+global-exclude .git*
+global-exclude .gitignore
+
+# Exclude IDE and editor files
+global-exclude .vscode
+global-exclude .idea
+global-exclude *.swp
+global-exclude *.swo
+global-exclude *~
+
+# Exclude output directories
+global-exclude output
+global-exclude output_grids
+global-exclude output_clusters
+
+# Exclude virtual environment directories
+global-exclude venv
+global-exclude .venv
+global-exclude env
+
+# Exclude HDF5 cache files and pickle files
+global-exclude *.h5
+global-exclude *.hdf5
+global-exclude *.pkl
+global-exclude *.pickle

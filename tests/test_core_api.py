@@ -7,7 +7,6 @@ import tempfile
 import shutil
 import numpy as np
 from PIL import Image
-from rich import print
 
 def create_test_images(output_dir, n_images=50):
     """

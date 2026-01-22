@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imageatlas"
+description = "ImageAtlas: A toolkit for organizing, cleaning and analysing your image datasets."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Ahmad Javed", email = "ahmadjaved97@gmail.com"}
+]
+maintainers = [
+    {name = "Ahmad Javed", email = "ahmadjaved97@gmail.com"}
+]
+keywords = [
+    "machine-learning",
+    "computer-vision",
+    "clustering",
+    "embeddings",
+    "feature-extraction",
+    "dataset-visualization",
+    "deep-learning",
+    "image-processing",
+    "data-science",
+    "pytorch"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+# These are marked dynamic so setuptools knows to look for them elsewhere
+dynamic = ["version", "dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/ahmadjaved97/imageatlas"
+Documentation = "https://github.com/ahmadjaved97/imageatlas"
+Repository = "https://github.com/ahmadjaved97/imageatlas"
+Issues = "https://github.com/ahmadjaved97/imageatlas/issues"
+Changelog = "https://github.com/ahmadjaved97/imageatlas/blob/main/CHANGELOG.md"
+
+
+[project.optional-dependencies]
+clip = [
+    "clip @ git+https://github.com/openai/CLIP.git"
+]
+full = [
+    "umap-learn",
+    "hdbscan",
+    "openpyxl",
+    "clip @ git+https://github.com/openai/CLIP.git"
+]
+
+[tool.setuptools]
+packages = ["imageatlas"]
+
+[tool.setuptools.dynamic]
+# 1. Reads the version dynamically from the __init__.py file
+version = {attr = "imageatlas.__version__"}
+
+# 2. Reads the dependencies dynamically from requirements.txt
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.package-data]
+# Ensures type hints are distributed with the package
+imageatlas = ["py.typed"]

@@ -1,83 +1,122 @@
-# Image Clustering and Visualization
+# ImageAtlas
 
 ## Overview
 
-This project focuses on organizing and visualizing a collection of images using state-of-the-art deep learning models. It uses deep learning models to extract features from images, which are then used to cluster the images into groups based on visual similarity. The resulting clusters are represented both through the creation of folders containing the clustered images and visually through composite grid images.
+ImageAtlas is a comprehensive toolkit designed to organize, clean, and analyze image datasets.
 
-This is particularly useful for applications involving large datasets of images where manual sorting and organization would be impractical. By automatically grouping similar images, it helps in data management, curation, and analysis tasks.
+⚠️ Note: ImageAtlas is currently in active development. The current version focuses on clustering and visualization functionality, with additional features coming soon.
 
-| Model's Supported        |Clustering Algorithms     |Dimensionality Reduction |
-|--------------------------|--------------------------|--------------------------
-| Vision Transformer (ViT) |KMeans                    |PCA                      |
-| ResNet-50                |Gausian Mixture Model(GMM)|UMAP                     |
-| VGG-16                   |HDBSCAN                   |                         |
-| MobileNet-V3             |                          |                         |
-| CLIP                     |                          |                         |
-|DINO V2                   |                          |                         |
-|SWIN(V2) Transformer      |                          |                         |
-|EfficientNetV2            |                          |                         |
-|ConvNeXt                  |                          |                         |
+Perfect for dataset curation, duplicate detection, quality control, and exploratory data analysis.
 
-### Key Features:
-- **Feature Extraction:** Utilizes pre-trained deep learning models to extract features from images.
-- **Clustering:** Implements clustering algorithms such as KMeans and Gaussian Mixture Models (GMM) to categorize images based on their features.
-- **Visualization:** Provides an intuitive visualization of the clustering results through grid images.
-- **Data Management:** Automates the organization of images into directory structures for easy access and analysis.
+## 📦 Installation
 
-The tool is designed to be flexible, allowing users to choose between different models and clustering methods, and to either calculate features on the fly or use precomputed ones.
+**Basic Installation**
 
-### Reusing Precomputed Features
-To avoid recomputing features every time you adjust the number of clusters or clustering method, the program saves the extracted features in a pickle file. You can enable this feature by setting the appropriate flag in the code to load precomputed features:
-
-## Usage
-
-### Prerequisites
-Ensure all dependencies are installed using the following command:
-
-```pip install -r requirements.txt```
-
-To install the OpenAI's clip module, use the following command:
-
-````pip install git+https://github.com/openai/CLIP.git````
-
-### Running the Script
 ```
-python3 cluster_images.py --image_dataset_path <path_to_image_dataset> \
-                      --grid_folder <path_to_save_grid_images> \
-                      --cluster_folder <path_to_save_clustered_images> \
-                      --feature_dict_path <path_to_save_or_load_feature_dict> \
-                      --num_clusters <number_of_clusters> \
-                      --model <model_type> \
-                      --clustering_method <clustering_method> \
-                      --reducer <dimensionality_reduction_method>                  #(optional)
-                      --device <device name> \
-                      [--use_feature_dict]
+pip install imageatlas
 ```
 
-### Example Command
+**Full Installation**
+
 ```
-python3 cluster_images.py --image_dataset_path ./images \
-                      --grid_folder ./grids \
-                      --cluster_folder ./clusters \
-                      --feature_dict_path ./features \
-                      --num_clusters 5 \
-                      --model vit \
-                      --clustering_method kmeans \
-                      --device cuda \
-                      --use_feature_dict
+pip install imageatlas[full]
 ```
 
-### Argument Description:
-- **--image_dataset_path**: Path to the folder containing images.
-- --**grid_folder**: Path to save the generated grid images (default: current directory).
-- --**cluster_folder**: Path to save images sorted into clusters (default: current directory).
-- --**feature_dict_path:** Path to save/load the feature dictionary (default: current directory).
-- --**num_clusters**: The number of clusters to create (does not affect hdbscan).
-- --**model**: The model type to use for feature extraction (vit, swin, resnet, vgg, mobilenet, efficientnet, convnext, clip, dinov2).
-- --**clustering_method**: The method to use for clustering, either kmeans, hdbscan or gmm.
-- --**use_feature_dict**: Use this flag if you want to use an existing feature dictionary instead of recalculating it.
-- --**reducer**: Dimensionality reduction method to be used (PCA, UMAP, default: None)
-- --**reduced_components**: Number of components after reduction using the dimensionality reduction method (default:50).
+**From Source**
+```
+git clone https://github.com/ahmadjaved97/ImageAtlas.git
+cd ImageAtlas
+pip install -e .
+```
+
+## 🚀 Quick Start
+
+### Minimal Working Example
+
+```python
+import os
+from imageatlas import ImageClusterer
+
+# Initialize clusterer
+clusterer = ImageClusterer(
+    model='dinov2',           # State-of-the-art features
+    clustering_method='kmeans',
+    n_clusters=10,
+    device='cuda'             # or 'cpu'
+)
+
+# Run clustering on your images
+results = clusterer.fit("./path/to/images")
+
+# Save results to JSON
+results.to_json("./output/clustering_results.json")
+
+# Create visual grids for each cluster
+results.create_grids(
+    image_dir="./path/to/images",
+    output_dir="./output/grids"
+)
+
+# Organize images into cluster folders
+results.create_cluster_folders(
+    image_dir="./path/to/images",
+    output_dir="./output/clusters"
+)
+```
+
+That's it! Your images are now clustered, visualized, and organized.
+
+## Available Models & Algorithms
+
+### Feature Extraction Models
+
+| Model            | Variants                                            |
+| ---------------- | --------------------------------------------------- |
+| **DINOv2**       | `vits14`, `vitb14`, `vitl14`, `vitg14`              |
+| **ViT**          | `b_16`, `b_32`, `l_16`, `l_32`, `h_14`              |
+| **ResNet**       | `18`, `34`, `50`, `101`, `152`                      |
+| **EfficientNet** | `s`, `m`, `l`                                       |
+| **CLIP**         | `RN50`, `RN101`, `ViT-B/32`, `ViT-B/16`, `ViT-L/14` |
+| **ConvNeXt**     | `tiny`, `small`, `base`, `large`                    |
+| **Swin**         | `t`, `s`, `b`, `v2_t`, `v2_s`, `v2_b`               |
+| **MobileNetV3**  | `small`, `large`                                    |
+| **VGG16**        | \-                                                  |
+
+### Clustering Algorithms
+
+| Algorithm   | Parameters                        |
+| ----------- | --------------------------------- |
+| **K-Means** | `n_clusters`                      |
+| **HDBSCAN** | `min_cluster_size`, `min_samples` |
+| **GMM**     | `n_components`, `covariance_type` |
+
+### Dimensionality Reduction
+
+| Method                    | Parameters                                |
+| --------------------------| ----------------------------------------- |
+| **PCA**                   | `n_components`, `whiten`                  |
+| **UMAP**                  | `n_components`, `n_neighbors`, `min_dist` |
+| **t-SNE(in development)** | `n_components`, `perplexity`              |
+
+
+## 📝 Citation
+
+If you use ImageAtlas in your research, please cite:
+
+```bibtex
+@software{imageatlas2024,
+  author = {Javed, Ahmad},
+  title = {ImageAtlas: A Toolkit for Organizing and Analyzing Image Datasets},
+  year = {2024},
+  url = {https://github.com/ahmadjaved97/ImageAtlas}
+}
+```
+##  Acknowledgments
+
+- [DINOv2](https://github.com/facebookresearch/dinov2): Facebook Research
+- [CLIP](https://github.com/openai/CLIP): OpenAI
+- [Vision Transformers](https://github.com/google-research/vision_transformer): Google Research
+- Built with [PyTorch](https://github.com/pytorch/pytorch), [scikit-learn](https://github.com/scikit-learn/scikit-learn), and [OpenCV](https://github.com/opencv/opencv)
 
 
 ### Sample Output
