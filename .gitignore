@@ -1,3 +1,5 @@
 __pycache__
 *.pkl
 *.pickle
+./venv
+*.egg-info
