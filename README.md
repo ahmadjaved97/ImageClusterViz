@@ -22,6 +22,12 @@ pip install imageatlas
 pip install imageatlas[full]
 ```
 
+**Note on CLIP**: If you wish to use the CLIP model, you must install it manually from GitHub using:
+
+```
+pip install git+https://github.com/openai/CLIP.git
+```
+
 **From Source**
 ```
 git clone https://github.com/ahmadjaved97/ImageAtlas.git
