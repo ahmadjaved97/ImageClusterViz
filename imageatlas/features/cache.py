@@ -121,7 +121,7 @@ class HDF5Cache(FeatureCache):
             path = path + ".h5"
         
         if not self.exists(path):
-            raise FileNotFoundError("fCache file not found: {path}")
+            raise FileNotFoundError(f"Cache file not found: {path}")
         
         with h5py.File(path, 'r') as f:
             # Load filenames
