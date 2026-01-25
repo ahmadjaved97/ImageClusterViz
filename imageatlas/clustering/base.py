@@ -8,7 +8,13 @@ import numpy as np
 class ClusteringResult:
     """
     Container for clustering Results.
+    Attributes:
+       cluster_labels: Array of cluster assignments for each sample.
+       cluster_dict: Dictionary mapping cluster IDs to list of sample indices.
+       n_clusters: Number of clusters found.
+       metadata: Additional algorithm-specific metadata.
     """
+
     cluster_labels: np.ndarray
     cluster_dict: Dict[int, List[int]]
     n_clusters: int
@@ -49,11 +55,18 @@ class ClusteringResult:
 class ClusteringAlgorithm(ABC):
     """
     Abstract base class for all clustering algorithms.
+
+    All the clustering algorithms must implement the fit_predict method and 
+    provide a consistent interface for clustering operations.
     """
 
     def __init__(self, random_state=42, **kwargs):
         """
         Initialize the clustering algorithm.
+
+        Args:
+            random_state: Random seed for reproducibility.
+            **kwargs: Additional algorithm related parameters.
         """
         self.random_state = random_state
         self.params = kwargs
@@ -64,6 +77,12 @@ class ClusteringAlgorithm(ABC):
     def fit_predict(self, features) -> ClusteringResult:
         """
         Fit the clustering algorithms and predict cluster labels.
+        
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+        
+        Returns:
+            ClusteringResult object containing cluster assignments and metadata.
         """
         pass
     
@@ -77,7 +96,14 @@ class ClusteringAlgorithm(ABC):
     def _validate_features(self, features:np.ndarray) -> None:
         """
         Validate the input feature matrix.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features) to validate.
+        
+        Raises:
+            ValueError: If features are invalid.
         """
+
         if not isinstance(features, np.ndarray):
             raise ValueError(f"Feature must be a numpy array, got {type(features)}")
         
@@ -93,6 +119,13 @@ class ClusteringAlgorithm(ABC):
     def _create_cluster_dict(self, cluster_labels, filenames=None):
         """
         Createa dictionary mapping cluster IDs to indices or filenames
+
+        Args:
+            cluster_labels: Array of cluster assignments.
+            filenames: Optional list of filenames corresponding to images.
+        
+        Returns:
+            Dictionary mapping cluster IDs to lists of indices or filenames
         """
 
         cluster_dict = {}
