@@ -1,4 +1,5 @@
 # ImageAtlas
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/imageatlas?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=Downloads)](https://pepy.tech/projects/imageatlas)
 
 ## Overview
 
