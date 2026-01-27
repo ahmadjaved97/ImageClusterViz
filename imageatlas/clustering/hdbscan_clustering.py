@@ -7,7 +7,16 @@ from .base import ClusteringAlgorithm, ClusteringResult
 
 class HDBSCANClustering(ClusteringAlgorithm):
     """
-    HDBSCAN algorithm.
+    HDBSCAN (Hierarchical Density-Based Spatial Clustering) Algorithm.
+
+    Args:
+        min_cluster_size: Minimum number of samples in a cluster
+        min_samples: Number of samples in a neighborhood for core points.
+        metric: Distance metric to use
+        cluster_selection_method: Method for selecting clusters ('eom' or 'leaf')
+        auto_params: Whether to automatically set parameters based on dataset size
+        random_state: Random seed (note: HDBSCAN is deterministic, this is for consistency)
+
     """
 
     def __init__(
@@ -37,6 +46,12 @@ class HDBSCANClustering(ClusteringAlgorithm):
     def _auto_select_params(self, n_samples):
         """
         Automatically select HDBSCAN parameters based on dataset size.
+
+        Args:
+            n_samples: Number of samples in the dataset.
+        
+        Returns:
+            Tuple of (min_cluster_size, min_samples)
         """
 
         if n_samples < 100:
@@ -62,6 +77,10 @@ class HDBSCANClustering(ClusteringAlgorithm):
 
         """
         Fit HDBSCAN and predict cluster labels.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+            filenames: Optional list of filenames for cluster mapping.
         """
 
         try:
@@ -137,6 +156,11 @@ class HDBSCANClustering(ClusteringAlgorithm):
     def get_outlier_score(self):
         """
         Get outlier score for each sample.
+
+        Higher scores indicate more likely outliers.
+
+        Returns:
+            Array of outlier scores or None if model is not fitted.
         """
 
         if self.is_fitted and self._model is not None:
@@ -147,6 +171,9 @@ class HDBSCANClustering(ClusteringAlgorithm):
     def get_condensed_tree(self):
         """
         Get condensed cluster hierarchy tree.
+
+        Returns:
+            Array of membership probabilities or None if model not fitted.
         """
 
         if self.is_fitted and self._model is not None:
