@@ -16,7 +16,7 @@ class GMMClustering(ClusteringAlgorithm):
         covariance_type: Type of covarince parameters ('full', 'diag', 'tied', 'spherical')
         max_iter: Maximum number of EM iterations
         n_init: Number of initializations to perform
-        reg_covar:
+        reg_covar: Regularization added to diagonal of covariance (prevents singular matrices)
         random_state: Random seed for reproducibility
     """
 
