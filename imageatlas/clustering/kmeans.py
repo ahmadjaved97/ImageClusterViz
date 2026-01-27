@@ -10,6 +10,14 @@ from typing import Optional
 class KMeansClustering(ClusteringAlgorithm):
     """
     K-Means clustering algorithm.
+
+    Args:
+        n_clusters: Number of clusters to form
+        n_init: Number of times to run with different centroid seeds
+        max_iter: Maximum number of iterations
+        use_minibatch: Whether to use MiniBatchKMeans for large datasets
+        batch_size: Batch size for MiniBatchKMeans
+        random_state: Random seed for reproducibility
     """
 
     def __init__(
@@ -42,6 +50,13 @@ class KMeansClustering(ClusteringAlgorithm):
 
         """
         Fit K-Means and predict cluster labels.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+            filenames: Optional list of filenames for cluster mapping
+        
+        Returns:
+            ClusteringResult object with cluster assignments.
         """
 
         self._validate_features(features)
@@ -108,6 +123,15 @@ class KMeansClustering(ClusteringAlgorithm):
     def predict(self, features):
         """
         Predict cluster label for new samples.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+        
+        Returns:
+            Array of cluster labels
+        
+        Raises:
+            RuntimeError: If model has not yet been fitted.
         """
 
         if not self.is_fitted or self._model == None:
@@ -119,6 +143,9 @@ class KMeansClustering(ClusteringAlgorithm):
     def get_cluster_centers(self):
         """
         Get cluster centers if model is fitted.
+
+        Returns:
+            Array of cluster centers or None if not fitted.
         """
         if self.is_fitted and self._model is not None:
             return self._model.cluster_centers_

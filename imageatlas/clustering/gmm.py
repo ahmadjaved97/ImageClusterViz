@@ -10,6 +10,14 @@ from .base import ClusteringAlgorithm, ClusteringResult
 class GMMClustering(ClusteringAlgorithm):
     """
     Gaussian Mixture Model clustering algorithm.
+
+    Args:
+        n_components: Number of mixture components (clusters)
+        covariance_type: Type of covarince parameters ('full', 'diag', 'tied', 'spherical')
+        max_iter: Maximum number of EM iterations
+        n_init: Number of initializations to perform
+        reg_covar: Regularization added to diagonal of covariance (prevents singular matrices)
+        random_state: Random seed for reproducibility
     """
 
     def __init__(
@@ -46,10 +54,16 @@ class GMMClustering(ClusteringAlgorithm):
 
         """
         Fit GMM and predict cluster labels.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+            filenames: Optional list of filenames for cluster mapping
+        
+        Returns:
+            ClusteringResult object with cluster assignments.
         """
 
         self._validate_features(features)
-        print('fshape: ', features.shape)
 
         n_samples = features.shape[0]
 
@@ -110,6 +124,15 @@ class GMMClustering(ClusteringAlgorithm):
     def predict(self, features):
         """
         Predict cluster label for new samples.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+        
+        Returns:
+            Array of cluster labels
+        
+        Raises:
+            RuntimeError: If model has not been fitted yet.
         """
 
         if not self.is_fitted or self._model is None:
@@ -121,6 +144,15 @@ class GMMClustering(ClusteringAlgorithm):
     def predict_proba(self, features):
         """
         Predict probability of each cluster for new samples.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+        
+        Returns:
+            Array of cluster labels
+        
+        Raises:
+            RuntimeError: If model has not been fitted yet.
         """
 
         if not self.is_fitted or self._model is None:
@@ -132,6 +164,9 @@ class GMMClustering(ClusteringAlgorithm):
     def get_cluster_means(self):
         """
         Get cluster means (centers) if model is fitted.
+
+        Returns:
+            Array of cluster centers or None if not fitted.
         """
 
         if self.is_fitted and self._model is not None:
@@ -142,6 +177,12 @@ class GMMClustering(ClusteringAlgorithm):
     def score(self, features):
         """
         Compute the log-likelihood of the data under the model.
+
+        Args:
+            features: Feature matrix of shape (n_samples, n_features)
+        
+        Returns:
+            Log-likelihood score
         """
 
         if not self.is_fitted or self._model is None:
