@@ -153,3 +153,23 @@ def compute_wavelet_hash(
     return hash_bits.flatten().astype(np.uint8)
 
 
+def hamming_distance(hash1, hash2):
+    """
+    Compute hamming distance between two binary hashes.
+    """
+
+    return np.sum(hash1 != hash2)
+
+def normalized_hamming_distance(hash1, hash2):
+    """
+    Compute normalized hamming distance (0-1 scale).
+    """
+
+    return hamming_distance(hash1, hash2) / len(hash1)
+
+def hamming_similarity(hash1, hash2):
+    """
+    Compute hamming similarity (0-1 scale).
+    """
+
+    return 1.0 - normalized_hamming_distance(hash1, hash2)
