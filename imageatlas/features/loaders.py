@@ -12,6 +12,8 @@ import warnings
 class ImageLoader:
     """
     Image loader with validation and error handling.
+
+    Handles corrupted images, format conversions, and EXIF orientations.
     """
     VALID_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', '.webp'}
 
@@ -23,6 +25,11 @@ class ImageLoader:
     ):
         """
         Initialize image loader.
+
+        Args:
+            max_size: Optional maximum size (width, height) for images
+            convert_mode: PIL odel to covert images to ('RGB', 'L', etc.)
+            handle_exif: Whether to handle EXIF orientation
         """
 
         self.max_size = max_size
@@ -33,6 +40,12 @@ class ImageLoader:
     def validate_path(self, path):
         """
         Check if path is valid
+
+        Args:
+            path: Path to image file
+        
+        Returns:
+            True if valid, False otherwise
         """
         if not os.path.exists(path):
             return False
@@ -43,6 +56,12 @@ class ImageLoader:
     def load_image(self, path):
         """
         Load a single image.
+
+        Args:
+            path: Path to image file
+        
+        Returns:
+            PIL Image or None if loadig failed
         """
 
         try:
@@ -78,6 +97,12 @@ class ImageLoader:
     def load_batch(self, paths):
         """
         Load a batch of images.
+
+        Args:
+            paths: List of image paths
+        
+        Returns:
+            Tuple of (loaded_images, successful_paths, failed_paths)
         """
 
         images = []
@@ -97,6 +122,12 @@ class ImageLoader:
     def _handle_orientation(self, image):
         """
         Handle EXIF orientation tag.
+
+        Args:
+            image: PIL Image
+        
+        Returns:
+            Oriented image
         """
 
         try:
@@ -129,6 +160,12 @@ class ImageLoader:
     def _resize_if_needed(self, image):
         """
         Resize image if it exceeds max size.
+
+        Args:
+            image: PIL Image
+        
+        Returns:
+            Resized image
         """
         if self.max_size is None:
             return image
@@ -149,6 +186,14 @@ class ImageLoader:
     ):
         """
         Find all images in a directory.
+
+        Args:
+            directory: Directory to search
+            pattern: Glob pattern for filenames
+            recursive: Whether to search recursively
+        
+        Returns:
+            List of image paths
         """
         path = Path(directory)
 
@@ -180,6 +225,13 @@ class ImageLoader:
 
         """
         Create batches from a list of items.
+
+        Args:
+            items: List of items to batch
+            batch_size: Size of each batch
+        
+        Yeilds:
+            Batches of items
         """
 
         for i in range(0, len(items), batch_size):
