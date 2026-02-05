@@ -12,6 +12,9 @@ import json
 class FeatureMetadata:
     """
     Metadata for extracted features.
+
+    Tracks information about the feature extractionn process including
+    model details, extraction parameters, and statistics.
     """
 
     # Model information
