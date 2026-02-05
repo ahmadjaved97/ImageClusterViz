@@ -17,6 +17,18 @@ from .metadata import FeatureMetadata
 class FeaturePipeline:
     """
     Main pipeline for feature extraction.
+
+    Handles batch processing, caching, progress tracking, and error recovery.
+
+    Example:
+        >>> from features import FeaturePipeline
+        >>> from feature_extractors import create_feature_extractor
+        >>> 
+        >>> extractor = create_feature_extractor('dinov2', device='cuda')
+        >>> pipeline = FeaturePipeline(extractor, batch_size=32)
+        >>> 
+        >>> result = pipeline.extract_from_directory('./images')
+        >>> pipeline.save('./features/features.h5')
     """
 
     def __init__(
@@ -30,6 +42,14 @@ class FeaturePipeline:
     ):
         """
         Initialize feature extraction pipeline.
+
+        Args:
+            extractor: Feature extractor (from feature_extractors module)
+            batch_size: Number of images to process at once
+            device: Device for processing ('cpu', 'cuda')
+            cache_backend: Cache backend to use ('hdf5')
+            max_image_size: Optional max size for images (width, height)
+            verbose: Whether to show progress bars
         """
 
         self.extractor = extractor
@@ -79,6 +99,16 @@ class FeaturePipeline:
 
         """
         Extract features from all images in a directory.
+
+        Args:
+            directory: Directory containing images
+            pattern: Glob pattern for filenames
+            recursive: Whether to search recursively
+            save_every: Save checkpoint every N images (optional)
+            save_path: Path for checkpoint saves (required if save_every is set)
+        
+        Returns:
+            Self for method chaining
         """
 
         # Find all images
@@ -112,6 +142,14 @@ class FeaturePipeline:
 
         """
         Extract features from a list of filepaths.
+
+        Args:
+            file_paths: List of image file paths
+            save_every: Save checkpoint every N images (optional)
+            save_path: Path for checkpoint saves (required if save_every is set)
+
+        Returns:
+            Self for method chaining
         """
 
         if save_every is not None and save_path is None:
