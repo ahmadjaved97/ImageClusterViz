@@ -70,6 +70,12 @@ class HDF5Cache(FeatureCache):
     ):
         """
         Save features to HDF5 file.
+
+        Args:
+            features: Feature array, shape (n_samples, feature_dim)
+            filenames: List of filenames corresponding to features
+            metadata: Feature metadata
+            path: Path to save HDF5 file
         """
 
         # Make sure path has .h5 extension
@@ -115,6 +121,13 @@ class HDF5Cache(FeatureCache):
     ):
         """
         Load features from HDF5 file.
+
+        Args:
+            path: Path to HDF5 File
+            lazy: If True, return memory-mapped array instead of loading to RAM
+        
+        Returns:
+            Tuple of (features, filenames, metadata)
         """
 
         if not path.endswith(".h5"):
@@ -161,6 +174,14 @@ class HDF5Cache(FeatureCache):
     ):
         """
         Load a subset of features.
+
+        Args:
+            path: Path to HDF5 file
+            indices: Indices to load (if provided)
+            filenames: Filenames to load (if provided)
+        
+        Returns:
+            Tuple of (features, filenames)
         """
 
         if not path.endswith(".h5"):
@@ -193,6 +214,11 @@ class HDF5Cache(FeatureCache):
     ):
         """
         Append new features to existing cache.
+
+        Args:
+            path: Path to the HDF5 file
+            new_features: New features to append
+            new_filenames: Corresponding filenames
         """
 
         if not path.endswith(".h5"):
@@ -223,6 +249,12 @@ class HDF5Cache(FeatureCache):
     def get_feature_dict(self, path):
         """
         Load features as dictionary (for backward compatibility)
+
+        Args:
+            path: Path to HDF5 file
+        
+        Returns:
+            Dictionary mapping filenames to feature vectors
         """
         features, filenames, _ = self.load(path)
         return {fn: feat for fn, feat in zip(filenames, features)}
@@ -230,6 +262,12 @@ class HDF5Cache(FeatureCache):
     def get_info(self, path):
         """
         Get information about the cache without loading data.
+
+        Args:
+            path: Path to HDF5 file
+        
+        Returns:
+            Dictionary with cache information
         """
 
         if not path.endswith(".h5"):
