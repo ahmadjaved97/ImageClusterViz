@@ -2,7 +2,7 @@
 ImageAtlas: A toolkit for organizing, cleaning and analysing your image datasets.
 """
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 
 # 1. High level API (The everything tool)

@@ -10,6 +10,8 @@ import warnings
 class BatchProcessor:
     """
     Handles batch processing of images through feature extractors.
+
+    Manages batching, device placement and memory cleanup.
     """
 
     def __init__(
@@ -20,6 +22,11 @@ class BatchProcessor:
     ):
         """
         Initialize batch processor.
+
+        Args:
+            batch_size: Number of images to process at once.
+            device: Device to use ('cpu', 'cuda', 'cuda:0', etc.)
+            clear_cache: Whether to clear GPU cache after each batch
         """
 
         self.batch_size = batch_size
@@ -50,8 +57,15 @@ class BatchProcessor:
     ):
         """
         Process a batch of extractors through the feature extractor.
-        TODO: use the correct batching method in the feature_extractors module.
+        Args:
+            images: List of PIL Images.
+            extractor: Feature extractor with extract_features method
+            return_numpy: Whether to return numpy array (vs torch tensor)
+        
+        Returns:
+            Array of feature vectors, shape (batch_size, feature_dim)
         """
+        # TODO: use the correct batching method in the feature_extractors module.
 
         if not images:
             return np.array([])
@@ -108,6 +122,14 @@ class BatchProcessor:
     ):
         """
         Estimate memory usage for a batch.
+
+        Args:
+            n_images: Number of images in a batch
+            feature_dim: Dimensions of feature vector
+            dtype: Data type of features
+
+        Returns:
+            Estimated memory in GB
         """
 
         bytes_per_element = np.dtype(dtype).itemsize
