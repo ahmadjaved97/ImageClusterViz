@@ -261,6 +261,10 @@ class FeaturePipeline:
     def save(self, path, format='hdf5'):
         """
         Save extracted features to disk.
+
+        Args:
+            path: Path to save features
+            format: Format to use ('hdf5')
         """
 
         if self.features is None or self.metadata is None:
@@ -282,6 +286,11 @@ class FeaturePipeline:
     def load(self, path):
         """
         Load features from disk.
+
+        Args:
+            path: Path to feature cache
+        
+        Returns: Self for method chaining
         """
 
         self.features, self.filenames, self.metadata = self.cache.load(path)
@@ -309,6 +318,9 @@ class FeaturePipeline:
     def get_feature_dict(self):
         """
         Get features as dictionary
+
+        Returns:
+            Dictionary mapping filenames to feature vectors
         """
 
         if self.features is None:
