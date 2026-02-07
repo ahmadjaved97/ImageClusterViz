@@ -179,5 +179,113 @@ class DuplicateDetector:
         
         return None
     
+    def detect(
+        self,
+        image_paths,
+    ):
+        """
+        Detect duplicates in images.
+        """
+
+        if self.verbose:
+            print("="*60)
+            print("DUPLICATE DETECTION")
+            print("="*60)
+
+        
+        # Step 1: Validate and collect image paths
+        if self.verbose:
+            print("\nStep1: Validating image paths...")
+        
+        image_paths = validate_image_paths(image_paths)
+
+        if self.verbose:
+            print(f"   Found {len(image_paths)} images")
+        
+        # Step 2: Compute signatures
+        if self.verbose:
+            print(f"\nStep 2: Computing signatures ({self.method})...")
+        
+        cache = self._get_cache()
+        strategy = self._get_strategy()
+
+        # Try to load from cache
+        signatures = None
+        if cache is not None:
+            signatures = cache.load_signatures(
+                method=strategy.get_method_name(),
+                filenames=image_paths
+            )
+        
+        # Compute if not cached
+        if signatures is None:
+            signatures = strategy.compute_signatures(
+                image_paths,
+                batch_size=self.batch_size,
+                verbose=self.verbose
+            )
+
+            # Save to cache
+            if cache is not None:
+                cache.save_signatures(
+                    signatures=signatures,
+                    filenames=image_paths,
+                    method=strategy.get_method_name()
+                )
+        
+        if self.verbose:
+            print(f"   Computed signatures: {signatures.shape}")
+        
+        # Step 3: compute pairsise similarities.
+        if self.verbose:
+            print("\nStep 3: Computing pairwise similarities...")
+        
+        # For hash methods, use special handling
+        if self.method in ['crypto_hash', 'phash', 'dhash', 'ahash', 'whash']:
+            similarity_matrix = self._compute_hash_similarities(
+                signatures,
+                strategy,
+                image_paths
+            )
+        else:
+            # For embeddings usse matrix computation
+            similarity_matrix = pairwise_similarity(
+                signatures,
+                metric=self.similarity_matrix,
+                batch_size=1000
+            )
     
+    def _compute_hash_similarities(
+        self,
+        signatures,
+        _strategy,
+        filenames
+    ):
+        """
+        Compute similarity matrix for hash-based methods.
+        """
+
+        n = len(signatures)
+        similarity_matrix = np.zeros((n, n), dtype=np.float32)
+
+        # Set diagonal to 1 (self-similarity)
+        np.fill_diagonal(similarity_matrix, 1.0)
+
+        with ProgressTracker(
+            n * (n - 1) // 2,
+            desc="Computing hash similarities",
+            disable=not self.verbose
+        ) as progress:
+
+            # Compute upper triangle
+            for i in range(n):
+                for j in range(i + 1, n):
+                    sim = strategy.compute_similarity(signatures[i], signatures[j])
+                    similarity_matrix[i, j] = sim
+                    similarity_matrix[j, i] = sim  # Similarity
+                    progress.update(1)
+        
+        return similarity_matrix
+        
+
 
