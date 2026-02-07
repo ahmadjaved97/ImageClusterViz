@@ -392,6 +392,119 @@ class DuplicateDetector:
                     progress.update(1)
         
         return similarity_matrix
+    
+    def detect_from_embeddings(
+        self,
+        embeddings,
+        filenames
+    ):
+        """
+        Detect duplicates from pre-computed embeddings.
+        """
 
+        if self.method in ['crypto_hash', 'phash', 'dhash', 'ahash', 'whash']:
+            raise ValueError("detect_from_embeddings only works with embedding-based methods")
+        
+        if len(embeddings) != len(filenames):
+            raise ValueError("Number of embeddings must match number of filenames")
+        
+        if self.verbose:
+            print("=" * 60)
+            print("DUPLICATE DETECTION (FROM EMBEDDINGS)")
+            print("=" * 60)
+            print(f"\nInput: {len(filenames)} images, {embeddings.shape[1]}D embeddings")
+        
+        # Use embeddings as signatures
+        signatures = embeddings
+
+        # Compute similarities
+        if self.verbose:
+            print("\nComputing pairwise similarities...")
+        
+        similarity_matrix = pairwise_similarity(
+            signatures,
+            metric=self.similarity_metric,
+            batch_size=1000
+        )
+        
+        # Determine threshold
+        if self.threshold is not None:
+            threshold_selector = FixedThreshold()
+            actual_threshold = threshold_selector.select_threshold(
+                similarity_matrix.flatten(),
+                user_threshold=self.threshold
+            )
+        else:
+            threshold_selector = AdaptivePercentileThreshold(
+                percentile=self.adaptive_percentile
+            )
+            actual_threshold = threshold_selector.select_threshold(
+                similarity_matrix.flatten()
+            )
+        
+        # Find pairs
+        pairs = find_pairs_above_threshold(
+            similarity_matrix,
+            actual_threshold,
+            filenames
+        )
+        
+        # Group
+        grouping_algo = self._get_grouping_algo()
+        groups = grouping_algo.group_duplicates(pairs, filenames)
+        
+        # Select best
+        best_selector = self._get_best_selector()
+        best_images = []
+        
+        for representative, duplicates in groups.items():
+            group_images = [representative] + duplicates
+            best = best_selector.select_best(group_images)
+            best_images.append(best)
+        
+        # Create results
+        metadata = {
+            'method': 'pre_computed_embeddings',
+            'threshold': actual_threshold,
+            'adaptive': self.adaptive_percentile is not None,
+            'grouping': self.grouping,
+            'best_selection': self.best_selection
+        }
+        
+        self.results_ = DuplicateResults(
+            pairs=pairs,
+            groups=groups,
+            filenames=filenames,
+            signatures=signatures,
+            best_images=best_images,
+            metadata=metadata
+        )
+        
+        self.is_fitted_ = True
+        
+        if self.verbose:
+            print(f"\n{self.results_.summary()}")
+        
+        return self.results_
+    
+
+    def get_results(self):
+        """
+        Get direction results.
+        """
+
+        if not self.is_fitted_:
+            raise RuntimeError("No results available. Run detect() first.")
+        
+        return self.results_
+    
+    def __repr__(self):
+        """
+        String representation
+        """
+        status = "fitted" if self.is_fitted_ else "not fitted"
+        return (f"DuplicateDetector(method='{self.method}', "
+                f"threshold={self.threshold}, "
+                f"status={status})")
 
 
