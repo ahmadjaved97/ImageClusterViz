@@ -4,6 +4,7 @@ Main API for duplicate detection.
 
 
 import numpy as np
+from typing import List, Union, Optional, Literal
 from pathlib import Path
 
 from .base import DuplicateDetectionStrategy, GroupingAlgorithm, BestImageSelector
@@ -32,3 +33,151 @@ from .utils import (
     compute_similarity_statistics,
     ProgressTracker
 )
+
+class DuplicateDetector:
+    """
+    Main API for duplicate image detection.
+
+    Supports multiple detection methods: hash-based, embedding based, CLIP.
+    Provides flexible configuration for threshold, grouping and selection.
+    """
+
+    def __init__(
+        self,
+        method: Literal['crypto_hash', 'phash', 'dhash', 'ahash', 'whash', 'embedding', 'clip'] = 'phash',
+        model = None,
+        variant = None,
+        hash_algorithm = 'md5',
+        similarity_metric = 'cosine',
+        threshold = None,
+        adaptive_percentile = None,
+        grouping = True,
+        best_selection = 'resolution',
+        device = 'auto',
+        batch_size = 32,
+        use_cache = False,
+        cache_path = None,
+        verbose = True
+    ):
+        """
+        Initialize duplicate detector.
+        """
+
+        # Validate parameters
+        params = {
+            'method': method,
+            'threshold': threshold,
+            'adaptive_percentile': adaptive_percentile,
+            'grouping': grouping,
+            'best_selection': best_selection,
+            'device': device,
+            'batch_size': batch_size
+        }
+
+        validate_detector_params(params)
+
+        # Store configuration
+        self.method = method
+        self.model = model
+        self.variant = variant
+        self.hash_algorithm = hash_algorithm
+        self.similarity_metric = similarity_metric
+        self.threshold = threshold
+        self.adaptive_percentile = adaptive_percentile
+        self.grouping = grouping
+        self.best_selection = best_selection
+        self.device = self._validate_device(device)    # REVISIT (create a common function to validate device across features)
+        self.batch_size = batch_size
+        self.use_cache = use_cache
+        self.cache_path = cache_path
+        self.verbose = verbose
+
+        # Initialize components
+        self._strategy = None
+        self._grouping_algo = None
+        self._best_selector = None
+        self._cache = None
+
+        # Results
+        self.results_ = None
+        self.is_fitted_ = False
+
+    
+    def _validate_device(self, device):
+        """
+        Validate and normalize device string.
+        """
+        if device == 'auto':
+            import torch
+            return 'cuda' if torch.cuda.is_available() else 'cpu'
+        return device
+    
+    def _get_strategy(self):
+        """
+        Get or create detection strategy.
+        """
+        if self._strategy is None:
+            if self.method == 'crypto_hash':
+                self._strategy = CryptographicHashStrategy(
+                    algorithm=self.hash_algorithm
+                )
+            elif self.method in ['phash', 'dhash', 'ahash', 'whash']:
+                self._strategy = PerceptualHashStrategy(
+                    algorithm=self.method,
+                    hash_size=8
+                )
+            elif self.method in 'embedding':
+                if self.model is None:
+                    raise ValueError("Must specify 'model' for embedding method.")
+                
+                self._strategy = EmbeddingStrategy(
+                    model = self.model,
+                    variant=self.variant,
+                    similarity_metric=self.similarity_metric,
+                    device=self.device
+                )
+            
+            elif self.method == 'clip':
+                variant = self.variant or 'ViT/B-16'
+                self._strategy = CLIPStrategy(
+                    variant=variant,
+                    device=self.device
+                )
+            else:
+                raise ValueError(f"Unknown method: {self.method}")
+        
+    
+    def _get_grouping_algo(self):
+        """
+        Get or create grouping algorithm.
+        """
+        if not self.grouping:
+            return PairwiseGrouping()
+        
+        if self._grouping_algo is None:
+            self._grouping_algo = GroupBuilder()
+        
+        return self._grouping_algo
+    
+    def _get_best_selector(self):
+        """
+        Get or create best image selector.
+        """
+        if self._best_selector is None:
+            self._best_selector = create_best_selector(self.best_selection)
+        
+        return self._best_selector
+    
+    def _get_cache(self):
+        """
+        Get or create cache.
+        """
+        if self.use_cache and self.cache_path:
+            if self._cache is None:
+                self._cache = DuplicateCache(self.cache_path)
+            return self._cache
+        
+        return None
+    
+    
+
