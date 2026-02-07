@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>ImageAtlas - Organize, Clean & Analyze Image Datasets</title>
+    <meta name="title" content="ImageAtlas - Organize, Clean & Analyze Image Datasets">
+    <meta name="description"
+        content="A comprehensive Python toolkit for organizing, cleaning, and analyzing image datasets. Features clustering, duplicate detection, and visual analysis with state-of-the-art models like DINOv2, CLIP, and ViT.">
+    <meta name="keywords"
+        content="image clustering, python image tools, dataset curation, duplicate detection, image analysis, DINOv2, CLIP, machine learning, computer vision, image dataset, data cleaning">
+    <meta name="author" content="Ahmad Javed">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ahmadjaved97.github.io/ImageAtlas/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ahmadjaved97.github.io/ImageAtlas/">
+    <meta property="og:title" content="ImageAtlas - Organize, Clean & Analyze Image Datasets">
+    <meta property="og:description"
+        content="A comprehensive Python toolkit for organizing, cleaning, and analyzing image datasets with state-of-the-art ML models.">
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/ahmadjaved97/ImageAtlas/main/assets/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ahmadjaved97.github.io/ImageAtlas/">
+    <meta property="twitter:title" content="ImageAtlas - Organize, Clean & Analyze Image Datasets">
+    <meta property="twitter:description"
+        content="A comprehensive Python toolkit for organizing, cleaning, and analyzing image datasets with state-of-the-art ML models.">
+    <meta property="twitter:image"
+        content="https://raw.githubusercontent.com/ahmadjaved97/ImageAtlas/main/assets/og-image.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'off-white': '#FFFFFF',
+                        'soft-gray': '#F8FAFC',
+                        'accent': '#3B82F6',
+                        'accent-dark': '#2563EB',
+                        'accent-light': '#60A5FA',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "ImageAtlas",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Cross-platform",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "description": "A comprehensive Python toolkit for organizing, cleaning, and analyzing image datasets with clustering, duplicate detection, and visual analysis.",
+        "author": {
+            "@type": "Person",
+            "name": "Ahmad Javed"
+        },
+        "programmingLanguage": "Python",
+        "codeRepository": "https://github.com/ahmadjaved97/ImageAtlas"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to Install ImageAtlas",
+        "description": "Install ImageAtlas Python library for image dataset analysis",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Basic Installation",
+                "text": "Run: pip install imageatlas"
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Full Installation",
+                "text": "Run: pip install imageatlas[full]"
+            }
+        ]
+    }
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .accent-text {
+            color: #3B82F6;
+        }
+
+        .code-block {
+            background: #1E1E2E;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #2D2D3F;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3B82F6;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="bg-off-white font-sans text-gray-800 antialiased">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 bg-off-white/80 backdrop-blur-lg border-b border-gray-200/50 z-50">
+        <nav class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2">
+                    <span class="font-bold text-xl text-gray-900">ImageAtlas</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Features</a>
+                    <a href="#installation"
+                        class="nav-link text-gray-600 hover:text-gray-900 font-medium">Installation</a>
+                    <a href="#quickstart" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Quick Start</a>
+                    <a href="#docs" class="nav-link text-gray-600 hover:text-gray-900 font-medium">Docs</a>
+                    <a href="https://github.com/ahmadjaved97/ImageAtlas/blob/main/CONTRIBUTING.md" target="_blank"
+                        class="nav-link text-gray-600 hover:text-gray-900 font-medium">Contribute</a>
+                </div>
+
+                <!-- GitHub Button -->
+                <a href="https://github.com/ahmadjaved97/ImageAtlas" target="_blank"
+                    class="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                    <i data-feather="github" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline font-medium">GitHub</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="pt-32 pb-20 px-6">
+            <div class="max-w-6xl mx-auto text-center">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full mb-8">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                    </span>
+                    <span class="text-sm font-medium">Now in Active Development</span>
+                </div>
+
+                <!-- Headline -->
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight">
+                    Organize, Clean &<br>
+                    <span class="text-accent">Analyze Image Datasets</span>
+                </h1>
+
+                <!-- Subheadline -->
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    A comprehensive Python toolkit for dataset curation, duplicate detection,
+                    quality control, and exploratory data analysis with state-of-the-art ML models.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                    <a href="#installation"
+                        class="w-full sm:w-auto bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-4 rounded-xl transition-all shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/30">
+                        Get Started
+                    </a>
+                    <a href="https://github.com/ahmadjaved97/ImageAtlas" target="_blank"
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-900 font-semibold px-8 py-4 rounded-xl border border-gray-200 transition-all">
+                        <i data-feather="github" class="w-5 h-5"></i>
+                        View on GitHub
+                    </a>
+                </div>
+
+                <!-- Stats -->
+                <div class="flex flex-wrap items-center justify-center gap-8">
+                    <div class="flex items-center gap-2">
+                        <img src="https://static.pepy.tech/badge/imageatlas" alt="Total Downloads" class="h-6">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="https://img.shields.io/pypi/v/imageatlas?style=flat-square&color=10B981&label=version"
+                            alt="PyPI Version" class="h-6">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="https://img.shields.io/github/stars/ahmadjaved97/ImageAtlas?style=flat-square&color=F59E0B&label=stars"
+                            alt="GitHub Stars" class="h-6">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <img src="https://img.shields.io/github/license/ahmadjaved97/ImageAtlas?style=flat-square&color=0891B2"
+                            alt="License" class="h-6">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="py-20 px-6 bg-soft-gray">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Powerful Features</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                        Everything you need to organize and analyze your image datasets
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Feature 1 -->
+                    <article class="feature-card bg-white p-8 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-6">
+                            <i data-feather="layers" class="w-6 h-6 text-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Image Clustering</h3>
+                        <p class="text-gray-600">
+                            Automatically group similar images using KMeans, HDBSCAN, or GMM algorithms with
+                            state-of-the-art feature extractors.
+                        </p>
+                    </article>
+
+                    <!-- Feature 2 -->
+                    <article class="feature-card bg-white p-8 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                            <i data-feather="cpu" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Modern ML Models</h3>
+                        <p class="text-gray-600">
+                            Leverage DINOv2, CLIP, ViT, ResNet, EfficientNet, and ConvNeXt for powerful feature
+                            extraction.
+                        </p>
+                    </article>
+
+                    <!-- Feature 3 -->
+                    <article class="feature-card bg-white p-8 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                            <i data-feather="copy" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Duplicate Detection</h3>
+                        <p class="text-gray-600">
+                            Find and remove duplicate or near-duplicate images from your datasets efficiently.
+                        </p>
+                    </article>
+
+                    <!-- Feature 4 -->
+                    <article class="feature-card bg-white p-8 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
+                            <i data-feather="grid" class="w-6 h-6 text-orange-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Visual Grids</h3>
+                        <p class="text-gray-600">
+                            Generate beautiful visual grids of clustered images for easy inspection and analysis.
+                        </p>
+                    </article>
+
+                    <!-- Feature 5 -->
+                    <article class="feature-card bg-white p-8 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-6">
+                            <i data-feather="bar-chart-2" class="w-6 h-6 text-pink-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Dimensionality Reduction</h3>
+                        <p class="text-gray-600">
+                            Visualize high-dimensional features with PCA, UMAP, or t-SNE for exploratory analysis.
+                        </p>
+                    </article>
+
+                    <!-- Feature 6 -->
+                    <article class="feature-card bg-white p-8 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-6">
+                            <i data-feather="folder" class="w-6 h-6 text-cyan-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Auto Organization</h3>
+                        <p class="text-gray-600">
+                            Automatically organize images into cluster folders and export results to JSON.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section id="installation" class="py-20 px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Installation</h2>
+                    <p class="text-xl text-gray-600">
+                        Get started in seconds with pip
+                    </p>
+                </div>
+
+                <!-- Basic Install -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Basic Installation</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-red-500"></div>
+                            <div class="code-dot bg-yellow-500"></div>
+                            <div class="code-dot bg-green-500"></div>
+                            <span class="ml-auto text-gray-400 text-sm">Terminal</span>
+                            <button onclick="copyCode('pip install imageatlas')"
+                                class="copy-btn ml-4 text-gray-400 hover:text-white">
+                                <i data-feather="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <pre
+                            class="p-6 text-gray-100 font-mono overflow-x-auto"><code class="language-bash">pip install imageatlas</code></pre>
+                    </div>
+                </div>
+
+                <!-- Full Install -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Full Installation (with all models)</h3>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dot bg-red-500"></div>
+                            <div class="code-dot bg-yellow-500"></div>
+                            <div class="code-dot bg-green-500"></div>
+                            <span class="ml-auto text-gray-400 text-sm">Terminal</span>
+                            <button onclick="copyCode('pip install imageatlas[full]')"
+                                class="copy-btn ml-4 text-gray-400 hover:text-white">
+                                <i data-feather="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <pre
+                            class="p-6 text-gray-100 font-mono overflow-x-auto"><code class="language-bash">pip install imageatlas[full]</code></pre>
+                    </div>
+                </div>
+
+                <!-- CLIP Note -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0">
+                            <i data-feather="alert-circle" class="w-6 h-6 text-amber-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-amber-800 mb-2">Note on CLIP</h4>
+                            <p class="text-amber-700 mb-3">If you wish to use the CLIP model, install it manually:</p>
+                            <code
+                                class="bg-amber-100 text-amber-800 px-3 py-1 rounded font-mono text-sm">pip install git+https://github.com/openai/CLIP.git</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section id="quickstart" class="py-20 px-6 bg-soft-gray">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Quick Start</h2>
+                    <p class="text-xl text-gray-600">
+                        Cluster your images in just a few lines of code
+                    </p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dot bg-red-500"></div>
+                        <div class="code-dot bg-yellow-500"></div>
+                        <div class="code-dot bg-green-500"></div>
+                        <span class="ml-auto text-gray-400 text-sm">example.py</span>
+                        <button onclick="copyQuickStart()" class="copy-btn ml-4 text-gray-400 hover:text-white">
+                            <i data-feather="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <pre class="p-6 text-sm overflow-x-auto"><code class="language-python">from imageatlas import ImageClusterer
+
+# Initialize clusterer with state-of-the-art features
+clusterer = ImageClusterer(
+    model='dinov2',           # DINOv2, CLIP, ViT, ResNet, etc.
+    clustering_method='kmeans',
+    n_clusters=10,
+    device='cuda'             # or 'cpu'
+)
+
+# Run clustering on your images
+results = clusterer.fit("./path/to/images")
+
+# Save results to JSON
+results.to_json("./output/clustering_results.json")
+
+# Create visual grids for each cluster
+results.create_grids(
+    image_dir="./path/to/images",
+    output_dir="./output/grids"
+)
+
+# Organize images into cluster folders
+results.create_cluster_folders(
+    image_dir="./path/to/images",
+    output_dir="./output/clusters"
+)</code></pre>
+                </div>
+
+                <p class="text-center text-gray-600 mt-8">
+                    That's it! Your images are now clustered, visualized, and organized. 🎉
+                </p>
+            </div>
+        </section>
+
+        <!-- Documentation Section -->
+        <section id="docs" class="py-20 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Documentation</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                        Explore available models and algorithms
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Feature Extraction Models -->
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        <div class="bg-accent p-6">
+                            <h3 class="text-xl font-bold text-white">Feature Extraction</h3>
+                            <p class="text-accent-100 text-sm mt-1">State-of-the-art models</p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                                    <span class="font-mono text-sm">dinov2</span>
+                                    <span class="text-gray-500 text-sm">- DINOv2 (ViT)</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                                    <span class="font-mono text-sm">clip</span>
+                                    <span class="text-gray-500 text-sm">- OpenAI CLIP</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                                    <span class="font-mono text-sm">vit</span>
+                                    <span class="text-gray-500 text-sm">- Vision Transformer</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                                    <span class="font-mono text-sm">resnet</span>
+                                    <span class="text-gray-500 text-sm">- ResNet (18-152)</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                                    <span class="font-mono text-sm">efficientnet</span>
+                                    <span class="text-gray-500 text-sm">- EfficientNet</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                                    <span class="font-mono text-sm">convnext</span>
+                                    <span class="text-gray-500 text-sm">- ConvNeXt</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Clustering Algorithms -->
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        <div class="bg-green-600 p-6">
+                            <h3 class="text-xl font-bold text-white">Clustering</h3>
+                            <p class="text-green-100 text-sm mt-1">Grouping algorithms</p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+                                    <span class="font-mono text-sm">kmeans</span>
+                                    <span class="text-gray-500 text-sm">- K-Means</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+                                    <span class="font-mono text-sm">hdbscan</span>
+                                    <span class="text-gray-500 text-sm">- HDBSCAN</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+                                    <span class="font-mono text-sm">gmm</span>
+                                    <span class="text-gray-500 text-sm">- Gaussian Mixture</span>
+                                </li>
+                            </ul>
+                            <div class="mt-6 pt-6 border-t border-gray-100">
+                                <p class="text-sm text-gray-500">
+                                    <strong>Parameters:</strong> n_clusters, min_cluster_size, min_samples, n_components
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dimensionality Reduction -->
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        <div class="bg-purple-600 p-6">
+                            <h3 class="text-xl font-bold text-white">Dim. Reduction</h3>
+                            <p class="text-purple-100 text-sm mt-1">Visualization methods</p>
+                        </div>
+                        <div class="p-6">
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
+                                    <span class="font-mono text-sm">pca</span>
+                                    <span class="text-gray-500 text-sm">- PCA</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
+                                    <span class="font-mono text-sm">umap</span>
+                                    <span class="text-gray-500 text-sm">- UMAP</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
+                                    <span class="font-mono text-sm">tsne</span>
+                                    <span class="text-gray-500 text-sm">- t-SNE</span>
+                                </li>
+                            </ul>
+                            <div class="mt-6 pt-6 border-t border-gray-100">
+                                <p class="text-sm text-gray-500">
+                                    <strong>Parameters:</strong> n_components, n_neighbors, min_dist, perplexity
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-12">
+                    <a href="https://github.com/ahmadjaved97/ImageAtlas#readme" target="_blank"
+                        class="inline-flex items-center gap-2 text-accent hover:text-accent-dark font-semibold">
+                        <span>View Full Documentation</span>
+                        <i data-feather="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Citation Section -->
+        <section id="citation" class="py-20 px-6 bg-soft-gray">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Citation</h2>
+                    <p class="text-xl text-gray-600">
+                        If you use ImageAtlas in your research, please cite it
+                    </p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dot bg-red-500"></div>
+                        <div class="code-dot bg-yellow-500"></div>
+                        <div class="code-dot bg-green-500"></div>
+                        <span class="ml-auto text-gray-400 text-sm">BibTeX</span>
+                        <button onclick="copyCitation()" class="copy-btn ml-4 text-gray-400 hover:text-white">
+                            <i data-feather="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <pre class="p-6 text-gray-100 font-mono text-sm overflow-x-auto"><code>@software{imageatlas,
+  author = {Ahmad Javed},
+  title = {ImageAtlas: A Toolkit for Organizing, Cleaning and Analyzing Image Datasets},
+  year = {2024},
+  url = {https://github.com/ahmadjaved97/ImageAtlas}
+}</code></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-12">
+                <!-- Brand -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="font-bold text-xl">ImageAtlas</span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        A comprehensive toolkit for organizing, cleaning, and analyzing image datasets with
+                        state-of-the-art machine learning models.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="https://github.com/ahmadjaved97/ImageAtlas" target="_blank"
+                            class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+                            <i data-feather="github" class="w-5 h-5"></i>
+                        </a>
+                        <a href="https://pypi.org/project/imageatlas/" target="_blank"
+                            class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+                            <i data-feather="package" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><a href="#docs" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#quickstart" class="hover:text-white transition-colors">Quick Start</a></li>
+                        <li><a href="https://github.com/ahmadjaved97/ImageAtlas/issues" target="_blank"
+                                class="hover:text-white transition-colors">Report Issues</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contribute -->
+                <div>
+                    <h4 class="font-semibold mb-4">Contribute</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><a href="https://github.com/ahmadjaved97/ImageAtlas" target="_blank"
+                                class="hover:text-white transition-colors">GitHub Repository</a></li>
+                        <li><a href="https://github.com/ahmadjaved97/ImageAtlas/blob/main/CONTRIBUTING.md"
+                                target="_blank" class="hover:text-white transition-colors">Contributing Guide</a></li>
+                        <li><a href="https://github.com/ahmadjaved97/ImageAtlas/pulls" target="_blank"
+                                class="hover:text-white transition-colors">Pull Requests</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div
+                class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm">
+                    © 2024 ImageAtlas. Released under the MIT License.
+                </p>
+                <p class="text-gray-500 text-sm">
+                    Made with ❤️ by <a href="https://github.com/ahmadjaved97" target="_blank"
+                        class="text-accent hover:text-accent-dark">Ahmad Javed</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Prism.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Copy to clipboard functions
+        function copyCode(text) {
+            navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard!');
+        }
+
+        function copyQuickStart() {
+            const code = `from imageatlas import ImageClusterer
+
+# Initialize clusterer with state-of-the-art features
+clusterer = ImageClusterer(
+    model='dinov2',           # DINOv2, CLIP, ViT, ResNet, etc.
+    clustering_method='kmeans',
+    n_clusters=10,
+    device='cuda'             # or 'cpu'
+)
+
+# Run clustering on your images
+results = clusterer.fit("./path/to/images")
+
+# Save results to JSON
+results.to_json("./output/clustering_results.json")
+
+# Create visual grids for each cluster
+results.create_grids(
+    image_dir="./path/to/images",
+    output_dir="./output/grids"
+)
+
+# Organize images into cluster folders
+results.create_cluster_folders(
+    image_dir="./path/to/images",
+    output_dir="./output/clusters"
+)`;
+            navigator.clipboard.writeText(code);
+            showToast('Code copied to clipboard!');
+        }
+
+        function copyCitation() {
+            const citation = `@software{imageatlas,
+  author = {Ahmad Javed},
+  title = {ImageAtlas: A Toolkit for Organizing, Cleaning and Analyzing Image Datasets},
+  year = {2024},
+  url = {https://github.com/ahmadjaved97/ImageAtlas}
+}`;
+            navigator.clipboard.writeText(citation);
+            showToast('Citation copied to clipboard!');
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
