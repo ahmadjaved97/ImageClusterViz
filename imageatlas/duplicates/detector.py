@@ -254,6 +254,112 @@ class DuplicateDetector:
                 metric=self.similarity_matrix,
                 batch_size=1000
             )
+        if self.verbose:
+            stats = compute_similarity_statistics(similarity_matrix)
+            print(f"   Similarity range: [{stats['min']:.3f}, {stats['max']:.3f}]")
+            print(f" Mean similarity: {stats['mean']:.3f}")
+        
+        # Step 4: Determine threshold
+        if self.verbose:
+            print("\nStep 4: Determining threshold...")
+        
+        if self.threshold is not None:
+            # Fixed threshold
+            threshold_selector = FixedThreshold()
+            actual_threshold = threshold_selector.select_threshold(
+                similarity_matrix.flatten(),
+                user_threshold=self.threshold
+            )
+        else:
+            # Adaptive threshold
+            threshold_selector = AdaptivePercentileThreshold(
+                percentile=self.adaptive_percentile
+            )
+            actual_threshold = threshold_selector.select_threshold(
+                similarity_matrix.flatten()
+            )
+        
+        if self.verbose:
+            print(f"   Threshold: {actual_threshold:.3f}")
+        
+        # Step 5: find pairs above threshold
+        if serlf.verbose:
+            print("\nStep 5: Finding duplicate pairs")
+        
+        pairs = find_pairs_above_threshold(
+            similarity_matrix,
+            actual_threshold,
+            image_paths
+        )
+
+        if self.verbose:
+            print(f"   Found {len(pairs)} images with duplicates")
+        
+        # Step 6: Group duplicates
+        if self.verbose:
+            print(f"\nStep 6: Grouping duplicates...")
+        
+        grouping_algo = self._get_grouping_algo()
+        groups = grouping_algo.group_duplicates(pairs, image_paths)
+
+        if self.verbose:
+            if self.grouping:
+                print(f"   Created {len(groups)} duplicate groups")
+            else:
+                print(f"   Pairwise mode (no grouping)")
+        
+        # Step 7: Select best images
+        if self.verbose:
+            print(f"\nStep 7: Selecting best images")
+        
+        best_selector = self._get_best_selector()
+        best_images = []
+
+        for representative, duplicates in groups.items():
+            # All images in group
+            group_images = [representative] + duplicates
+
+            # Select best
+            best = best_selector.select_best(group_images)
+            best_images.append(best)
+        
+        if self.verbose:
+            print(f"   Selected {len(best_images)} best images")
+        
+        # Step 8: Create results
+        metadata = {
+            'method': strategy.get_method_name(),
+            'threshold': actual_threshold,
+            'adaptive': self.adaptive_percentile is not None,
+            'grouping': self.grouping,
+            'best_selection': self.best_selection,
+            'device': self.device,
+            'batch_size': self.batch_size
+        }
+
+        if self.model:
+            metadata['model'] = self.model
+        if self.variant:
+            metadata['variant'] = self.variant
+        
+        self.results_ = DuplicateResults(
+            pairs=pairs,
+            groups=groups,
+            filenames=image_paths,
+            signatures=signatures,
+            best_images=best_images,
+            metadata=metadata
+        )
+
+        self.is_fitted_ = True
+
+        if self.verbose:
+            print("\n" + "=" * 60)
+            print("DETECTION COMPLETE")
+            print("=" * 60)
+            print(f"\n{self.results_.summary()}")
+        
+        return self.results_
     
     def _compute_hash_similarities(
         self,
@@ -286,6 +392,6 @@ class DuplicateDetector:
                     progress.update(1)
         
         return similarity_matrix
-        
+
 
 
