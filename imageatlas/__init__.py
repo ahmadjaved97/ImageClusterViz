@@ -29,6 +29,7 @@ from .clustering.factory import create_clustering_algorithm
 from .visualization.grids import GridVisualizer, create_cluster_grids
 
 __all__ = [
+    # Clustering
     'ImageClusterer',
     'ClusteringResults',
     'FeaturePipeline',
@@ -39,4 +40,9 @@ __all__ = [
     'create_clustering_algorithm',
     'GridVisualizer',
     'create_cluster_grids',
+
+    # Duplicate detection
+    'DuplicateDetector',
+    'DuplicateResults',
+    'create_duplicate_grids'
 ]
