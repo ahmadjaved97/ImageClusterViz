@@ -48,7 +48,7 @@ def main():
         example_1_simple_hash,
     ]
 
-     print("\n" + "="*70)
+    print("\n" + "="*70)
     print("IMAGEATLAS DUPLICATE DETECTION EXAMPLES")
     print("="*70)
     
