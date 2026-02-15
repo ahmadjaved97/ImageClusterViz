@@ -7,7 +7,7 @@ from pathlib import Path
 
 def validate_image_paths(
     paths,
-    check_exists
+    check_exists=True
 ):
     """
     Validate and normalize image paths.

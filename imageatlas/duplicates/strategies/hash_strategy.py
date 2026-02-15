@@ -52,7 +52,7 @@ class CryptographicHashStrategy(DuplicateDetectionStrategy):
                 try:
                     hash_value = compute_crypto_hash(path, self.algorithm)
                     hashes.append(hash_value)
-                except for Exception as e:
+                except Exception as e:
                     warnings.warn(f"Failed to hash {path}: {e}")
                     hashes.append(None)
                 
@@ -87,7 +87,8 @@ class PerceptualHashStrategy(DuplicateDetectionStrategy):
     def __init__(
         self,
         algorithm='phash',
-        hash_size=8
+        hash_size=8,
+        **kwargs
     ):
         """
         Initialize perceptual hash strategy.

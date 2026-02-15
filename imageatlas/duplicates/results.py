@@ -242,7 +242,7 @@ class DuplicateResults:
                     rows.append({
                         'image_1': img1,
                         'image_2': img2,
-                        'similarity_score': score if score is not None else ''
+                        'similarity_score': score if score is not None else '',
                         'method': self.metadata.get('method', ''),
                         'threshold_used': self.metadata.get('threshold', ''),
                         'is_best_image_1': img1 == rep,

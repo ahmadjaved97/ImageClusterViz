@@ -6,7 +6,7 @@ import numpy as np
 from typing import List
 from PIL import Image
 
-from ..features.extractors import create_feature_extractor
+from ...features.extractors import create_feature_extractor
 
 class FeatureExtractorAdapter:
     """

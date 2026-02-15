@@ -7,7 +7,6 @@ from .group_builder import GroupBuilder, PairwiseGrouping
 from .threshold_selector import (
     FixedThreshold,
     AdaptivePercentileThreshold,
-    AdaptiveGapThreshold
 )
 
 

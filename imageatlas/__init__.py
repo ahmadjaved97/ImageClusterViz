@@ -28,6 +28,14 @@ from .clustering.factory import create_clustering_algorithm
 # Visualization Tools
 from .visualization.grids import GridVisualizer, create_cluster_grids
 
+# Duplicate Detection Module
+from .duplicates import (
+    DuplicateDetector,
+    DuplicateResults,
+    # create_duplicate_grids
+)
+
+
 __all__ = [
     # Clustering
     'ImageClusterer',
@@ -44,5 +52,5 @@ __all__ = [
     # Duplicate detection
     'DuplicateDetector',
     'DuplicateResults',
-    'create_duplicate_grids'
+    # 'create_duplicate_grids'
 ]

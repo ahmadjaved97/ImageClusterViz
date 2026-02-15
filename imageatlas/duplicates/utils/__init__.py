@@ -13,7 +13,7 @@ from .hash_utils import (
     hamming_similarity
 )
 
-from .similarity_utils.py import (
+from .similarity_utils import (
     cosine_similarity,
     euclidean_distance,
     euclidean_similarity,
@@ -32,7 +32,7 @@ from .validation import (
 from .progress import ProgressTracker
 
 
-__all__ [
+__all__ = [
     # Hash utilities
     'compute_crypto_hash',
     'compute_average_hash',

@@ -27,7 +27,7 @@ class EmbeddingStrategy(DuplicateDetectionStrategy):
 
         super().__init__(
             model=model,
-            self.variant=variant,
+            variant=variant,
             similarity_metric=similarity_metric,
             device=device,
             **kwargs
