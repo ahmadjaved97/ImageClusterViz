@@ -32,7 +32,7 @@ from .visualization.grids import GridVisualizer, create_cluster_grids
 from .duplicates import (
     DuplicateDetector,
     DuplicateResults,
-    # create_duplicate_grids
+    create_duplicate_grids
 )
 
 
@@ -52,5 +52,5 @@ __all__ = [
     # Duplicate detection
     'DuplicateDetector',
     'DuplicateResults',
-    # 'create_duplicate_grids'
+    'create_duplicate_grids'
 ]

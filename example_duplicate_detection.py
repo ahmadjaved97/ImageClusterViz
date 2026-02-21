@@ -3,7 +3,7 @@ Example usage of duplicate detection module.
 """
 
 import os
-from imageatlas import DuplicateDetector, DuplicateResults
+from imageatlas import DuplicateDetector, DuplicateResults, create_duplicate_grids
 
 def example_1_simple_hash():
     """
@@ -17,7 +17,7 @@ def example_1_simple_hash():
     # Create detector with perceptual hash
     detector = DuplicateDetector(
         method='phash',
-        threshold=0.8,
+        threshold=0.6,
         grouping=True,
         best_selection='resolution'
     )
@@ -32,7 +32,13 @@ def example_1_simple_hash():
     results.to_csv("./output/duplicates.csv")
     results.to_json("./output/duplicates.json")
 
-    # Create visualizations (REVISIT)
+    # Create visualizations
+    create_duplicate_grids(
+        results,
+        image_dir="/home/s63ajave/datasets/temp_ds",
+        output_dir='./output/grids',
+        top_n=10
+    )
 
     print(f"\nFiles to keep: {results.get_best_images()[:5]}")
     print(f"Files to remove: {results.get_images_to_remove()[:5]}")
