@@ -107,7 +107,7 @@ class DuplicateGridVisualizer:
         )
         
         # Add "BEST" text
-        img_copy = self.add_text_overlay(img_copy, "★ BEST", position='top')
+        img_copy = self.add_text_overlay(img_copy, "BEST", position='top')
         
         return img_copy
     

@@ -256,7 +256,7 @@ class DuplicateDetector:
             # For embeddings usse matrix computation
             similarity_matrix = pairwise_similarity(
                 signatures,
-                metric=self.similarity_matrix,
+                metric=self.similarity_metric,
                 batch_size=1000
             )
         if self.verbose:

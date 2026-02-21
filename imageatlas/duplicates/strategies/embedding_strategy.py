@@ -19,7 +19,8 @@ class EmbeddingStrategy(DuplicateDetectionStrategy):
         model: str = 'dinov2',
         variant: str ='vits14',
         similarity_metric: Literal['cosine','euclidean'] = 'cosine',
-        device: str = 'cpu'
+        device: str = 'cpu',
+        **kwargs
     ):
         """
         Initialize embedding strategy.

@@ -17,7 +17,7 @@ def example_1_simple_hash():
     # Create detector with perceptual hash
     detector = DuplicateDetector(
         method='phash',
-        threshold=0.6,
+        threshold=0.8,
         grouping=True,
         best_selection='resolution'
     )
