@@ -116,6 +116,7 @@ class DuplicateDetector:
         """
         Get or create detection strategy.
         """
+        print(self.method)
         if self._strategy is None:
             if self.method == 'crypto_hash':
                 self._strategy = CryptographicHashStrategy(
@@ -145,6 +146,8 @@ class DuplicateDetector:
                 )
             else:
                 raise ValueError(f"Unknown method: {self.method}")
+        
+        return self._strategy
         
     
     def _get_grouping_algo(self):
@@ -208,6 +211,8 @@ class DuplicateDetector:
         
         cache = self._get_cache()
         strategy = self._get_strategy()
+        print(strategy)
+
 
         # Try to load from cache
         signatures = None
@@ -283,7 +288,7 @@ class DuplicateDetector:
             print(f"   Threshold: {actual_threshold:.3f}")
         
         # Step 5: find pairs above threshold
-        if serlf.verbose:
+        if self.verbose:
             print("\nStep 5: Finding duplicate pairs")
         
         pairs = find_pairs_above_threshold(
@@ -364,7 +369,7 @@ class DuplicateDetector:
     def _compute_hash_similarities(
         self,
         signatures,
-        _strategy,
+        strategy,
         filenames
     ):
         """

@@ -26,7 +26,7 @@ class GroupBuilder(GroupingAlgorithm):
         group_counter = 0
 
         # Process all pairs
-        for img1, duplicates in paris.items():
+        for img1, duplicates in pairs.items():
             for img2, score in duplicates:
                 # Get or create groups for both images.
                 group1 = image_to_group.get(img1)

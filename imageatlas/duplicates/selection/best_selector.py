@@ -118,7 +118,7 @@ class FileSizeSelector(BestImageSelector):
 # Implement a composite selector (REVISIT)
 
 
-def create_best_selector(selector_type):
+def create_best_selector(selection_type):
     """
     Factory function to create best image selector.
 

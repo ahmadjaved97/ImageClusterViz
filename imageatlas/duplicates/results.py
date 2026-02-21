@@ -72,7 +72,7 @@ class DuplicateResults:
 
         if self.pairs:
             all_scores = []
-            for duplicates in self.paris.values():
+            for duplicates in self.pairs.values():
                 all_scores.extend([score for _, score in duplicates])
             
             if all_scores:
@@ -178,7 +178,7 @@ class DuplicateResults:
         """
 
         data = {
-            'pairs': self.paris,
+            'pairs': self.pairs,
             'groups': self.groups,
             'filenames': self.filenames,
             'best_images': self.best_images,
@@ -199,6 +199,9 @@ class DuplicateResults:
 
         data = self.to_dict(include_signatures=include_signatures)
 
+        # Convert numpy types to native Python types
+        data = self._convert_numpy_types(data)
+
         # Create directory if needed
         Path(path).parent.mkdir(parents=True, exist_ok=True)
 
@@ -206,6 +209,32 @@ class DuplicateResults:
             json.dump(data, f, indent=2)
         
         print(f"Results exported to JSON: {path}")
+    
+
+    def _convert_numpy_types(self, obj):
+        """
+        Recursively convert numpy types to Python native types.
+        
+        Args:
+            obj: Object to convert
+        
+        Returns:
+            Converted object
+        """
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, dict):
+            return {key: self._convert_numpy_types(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._convert_numpy_types(item) for item in obj]
+        elif isinstance(obj, tuple):
+            return tuple(self._convert_numpy_types(item) for item in obj)
+        else:
+            return obj
     
     def to_csv(self, path):
         """

@@ -119,7 +119,7 @@ def compute_similarity_statistics(similarity_matrix):
 
     return {
         'mean': float(np.mean(upper_triangle)),
-        'median': float(np.media(upper_triangle)),
+        'median': float(np.median(upper_triangle)),
         'std': float(np.std(upper_triangle)),
         'min': float(np.min(upper_triangle)),
         'max': float(np.max(upper_triangle)),

@@ -38,11 +38,11 @@ class ProgressTracker:
 
         self.current += n
 
-        if self.pabar is not None:
+        if self.pbar is not None:
             self.pbar.update(n)
 
             if kwargs:
-                self.pabar.set_postfix(**kwargs)
+                self.pbar.set_postfix(**kwargs)
         
         if self.callback is not None:
             self.callback(self.current, self.total)
@@ -67,9 +67,10 @@ class ProgressTracker:
         """
         return self
     
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         """
         Context manager exit.
         """
         self.close()
+        return False
         
