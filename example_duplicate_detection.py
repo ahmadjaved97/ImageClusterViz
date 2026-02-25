@@ -40,8 +40,50 @@ def example_1_simple_hash():
         top_n=10
     )
 
-    print(f"\nFiles to keep: {results.get_best_images()[:5]}")
-    print(f"Files to remove: {results.get_images_to_remove()[:5]}")
+def example_2_deep_learning():
+    """
+    Deep learning based duplicate detection.
+    """
+
+    print("\n" + "="*70)
+    print("EXAMPLE 2: Deep Learning Embedding Detection (DINOv2)")
+    print("="*70)
+
+    # Create detector with DINOv2 embeddings
+    detector = DuplicateDetector(
+        method='embedding',
+        model='dinov2',
+        variant='vits14',
+        similarity_metric='cosine',
+        threshold=0.95,
+        device='cuda',
+        batch_size=32,
+        use_cache=True,
+        cache_path='./cache/features.h5',
+        verbose=True,
+    )
+
+    #Detect duplicates
+    results = detector.detect('/home/s63ajave/datasets/temp_ds')
+
+    # Get statistics
+    stats = results.get_statistics()
+    print(f"\nDataset reduction: {stats['reduction_percentage']:.1f}%")
+    print(f"Can remove {stats['total_duplicates']} images")
+    
+    # Export to Excel
+    results.to_json('./output/duplicates_dinov2.json')
+
+    # Create visualizations
+    create_duplicate_grids(
+        results,
+        image_dir="/home/s63ajave/datasets/temp_ds",
+        output_dir='./output/grids_dinov2',
+        top_n=10
+    )
+
+
+
 
 
 
@@ -52,6 +94,7 @@ def main():
 
     examples = [
         example_1_simple_hash,
+        example_2_deep_learning
     ]
 
     print("\n" + "="*70)

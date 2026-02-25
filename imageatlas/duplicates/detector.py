@@ -24,7 +24,7 @@ from .grouping import (
 
 from .selection import create_best_selector
 from .results import DuplicateResults
-# from .cache import DuplicateCache
+from .cache import DuplicateCache
 from .utils import (
     validate_image_paths,
     validate_detector_params,
